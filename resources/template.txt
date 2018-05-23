@@ -1,0 +1,16 @@
+Hello {{FirstName}}
+Your age is {{Age}}!
+{{#PrintLastName}}
+Well, your last name is {{LastName}}
+{{/PrintLastName}}
+
+And your child(s) are:
+{{#ChildNames}}
+  {{Value}}
+{{/ChildNames}}
+
+
+And your parrent(s) are:
+{{#ParentNames}}
+  {{Value}}
+{{/ParentNames}}
