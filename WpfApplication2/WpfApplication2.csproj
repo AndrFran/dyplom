@@ -70,6 +70,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FlowGraphNode.cs" />
+    <Compile Include="FlowGraphWalker.cs" />
     <Compile Include="JsonParser.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="SyntaxTree.cs" />
