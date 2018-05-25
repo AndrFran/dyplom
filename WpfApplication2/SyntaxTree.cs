@@ -173,7 +173,7 @@ namespace WpfApplication2
         FlowGraphNode ParseArrayRef(Dictionary<string, object> item)
         {
             ArrayRef node = new ArrayRef();
-            node.Name = item["name"].ToString();
+            node.Name = ((Dictionary<string,object>)item["name"])["name"].ToString();
             node.index = ParseNode(((Dictionary<string, object>)item["subscript"]));
             return node;
         }

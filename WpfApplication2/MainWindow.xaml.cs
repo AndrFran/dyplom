@@ -139,7 +139,17 @@ namespace WpfApplication2
                 
                 string json =System.IO.File.ReadAllText(openFileDialog.FileName);
                 Presenter presenter = new Presenter();
-                presenter.BuildFlowControlGraph(json);
+                List<UIElement> nodes = presenter.BuildFlowControlGraph(json);
+                foreach (var elem in nodes)
+                {
+                    DrawingField.Children.Add(elem);
+                }
+                foreach (MyGrid elem in presenter.grids)
+                {
+                    DrawingField.Children.Add(elem);
+                    Canvas.SetLeft(elem, elem.xpos);
+                    Canvas.SetTop(elem, elem.ypos);
+                }
             }
                 
 

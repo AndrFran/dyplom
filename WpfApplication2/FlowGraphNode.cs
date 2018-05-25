@@ -68,6 +68,25 @@ namespace WpfApplication2
         {
             this.type = type;
         }
+        override public string ToString()
+        {
+            string array = "";
+            string pointer = "";
+            string inited="Declaration";
+            if(this.isArray)
+            {
+                array = "[]";
+            }
+            if(this.isPointer)
+            {
+                pointer = "*";
+            }
+            if(this.isInited)
+            {
+                inited = "initialized";
+            }
+            return inited+"  variable  " + this.DeclName +" of type "+ this.DeclType+array+pointer;
+        }
     }
 
     public class FuncCallNode : FlowGraphNode
@@ -84,6 +103,15 @@ namespace WpfApplication2
         public void setNodeType(NodeType type)
         {
             this.type = type;
+        }
+        override public string ToString()
+        {
+            StringBuilder str= new StringBuilder();
+            foreach(var arg in this.args)
+                {
+                str.Append(arg.ToString() + "  ");
+            }
+            return "call  " + this.FunctionName + " with " + str.ToString();
         }
     }
 
@@ -148,7 +176,10 @@ namespace WpfApplication2
         {
             this.type = type;
         }
-
+        override public string ToString()
+        {
+            return this.Name;
+        }
         public string Name { get; set; }
     }
     public class ConstantNode : FlowGraphNode
@@ -169,6 +200,11 @@ namespace WpfApplication2
         }
         public string ValType { get; set; }
         public string Value { get; set; }
+
+        override public string ToString()
+        {
+            return this.Value.ToString();
+        }
     }
     public class ArrayRef: FlowGraphNode
     {
@@ -189,6 +225,11 @@ namespace WpfApplication2
 
         public string Name { get; set; }
         public FlowGraphNode index { get; set; }
+
+        override public string ToString()
+        {
+            return this.Name + "["+index.ToString()+"]";
+        }
     }
     public class BinaryOp : FlowGraphNode
     {

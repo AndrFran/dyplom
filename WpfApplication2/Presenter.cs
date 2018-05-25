@@ -15,17 +15,37 @@ namespace WpfApplication2
         int depth;
         const int linelenght = 20;
         const int smallLineshift = 5;
+        public List<MyGrid> grids;
         public Presenter()
         {
-
+            grids = new List<MyGrid>();
         }
-        System.Windows.UIElement getNextRect(int x,int y,FlowGraphNode node)
+        MyGrid getNextRect(int x,int y,FlowGraphNode node)
         {
             var grid = new MyGrid();
-            Rectangle rect = new Rectangle { Width = 70, Height = 30, Fill = Brushes.Azure };
+            
+            Rectangle rect = new Rectangle { Width = Double.NaN, Height = Double.NaN, Fill = Brushes.Azure };
+            rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            rect.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
             grid.Children.Add(rect);
-            grid.Children.Add(new TextBlock { Text = node.ToString() });
-            grid.xpos = x - 35;
+            grid.Children.Add(new TextBlock { Text = node.ToString(), Foreground = Brushes.Black });
+            grid.xpos = x - 50-(int)1.7*node.ToString().Length;
+            grid.ypos = y;
+            return grid;
+        }
+        MyGrid getNextDiamond(int x, int y, FlowGraphNode node)
+        {
+            var grid = new MyGrid();
+
+            Rectangle rect = new Rectangle { Width = 50, Height = 50, Fill = Brushes.Azure };
+            rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            rect.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+            RotateTransform rotation = new RotateTransform();
+            rotation.Angle = 45;
+            rect.RenderTransform = rotation;
+            grid.Children.Add(rect);
+            grid.Children.Add(new TextBlock { Text = node.ToString(), Foreground = Brushes.Black });
+            grid.xpos = x-40;
             grid.ypos = y;
             return grid;
         }
@@ -55,6 +75,7 @@ namespace WpfApplication2
             myLine2.Y1 = y+20;
             myLine2.Y2 = y+15;
             myLine2.StrokeThickness = 2;
+            l.Add(myLine2);
             return l;
         }
         public List<System.Windows.UIElement> BuildFlowControlGraph(string json)
@@ -87,12 +108,14 @@ namespace WpfApplication2
                         }
                     case NodeType.E_IF:
                         {
+                            grids.Add(getNextDiamond(x, y, node));
+                            y += 50;
                             break;
                         }
                     default:
                         {
-                            shapes.Add(getNextRect(x,y,node));
-                            y += 30;
+                            grids.Add(getNextRect(x,y,node));
+                            y += 20;
                             shapes.AddRange(getNextLine(x, y));
                             y += 20;
                             break;
@@ -103,7 +126,7 @@ namespace WpfApplication2
         }
     }
 
-    class MyGrid : Grid
+    public class MyGrid : Grid
     {
         public int xpos { get; set; }
         public int ypos { get; set; }
