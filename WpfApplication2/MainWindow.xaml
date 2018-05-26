@@ -7,66 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="403,20,10,69">
-            <Canvas x:Name="DrawingField" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="369"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="32,20,10,69">
+            <Canvas x:Name="DrawingField" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="15"/>
         </ScrollViewer>
         <Button x:Name="button" Content=">>" HorizontalAlignment="Left" Margin="708,510,0,0" VerticalAlignment="Top" Width="74" Click="button_Click_1" RenderTransformOrigin="1.4,0.7"/>
         <Button x:Name="button_Copy" Content="&lt;&lt;" HorizontalAlignment="Right" Margin="0,505,707,0" VerticalAlignment="Top" Width="75" Click="OpenJson"/>
-        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Left" Height="481" Margin="0,19,0,0" VerticalAlignment="Top" Width="398" TextChanged="richTextBox_TextChanged">
-            <FlowDocument>
-                <Paragraph>
-                    <Run Text="void DiskDataTestCase"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="{}{"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    strcpy(absoluteFilename, AUX_FILENAME);"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    CPPUNIT_ASSERT( RelativeToAbsolutePath(absoluteFilename,"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="                                           &amp;size) );"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text=" "/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    // executes action"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    CPPUNIT_ASSERT( fixture-&gt;load(absoluteFilename) );"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text=" "/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    // ...and check results with assertions"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    LPDATA    loadedData = fixture-&gt;getData();"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text=" "/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    CPPUNIT_ASSERT(loadedData != NULL);"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    CPPUNIT_ASSERT_EQUAL(FILE_NUMBER, loadedData-&gt;number);"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="    CPPUNIT_ASSERT( 0 == strcmp(FILE_STRING, "/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="            fixture-&gt;getData()-&gt;string) );"/>
-                </Paragraph>
-                <Paragraph>
-                    <Run Text="}"/>
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
+      
 
 
     </Grid>

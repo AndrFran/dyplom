@@ -57,7 +57,11 @@ namespace WpfApplication2
             {
                 addNewNode(ParseNode(item));
             }
-
+            ArrayList prameters = (ArrayList)(((Dictionary<string, object>)(((Dictionary<string, object>)(((Dictionary<string, object>)(this.functions[id]["decl"]))["type"]))["args"]))["params"]);
+            foreach(Dictionary<string, object>  paremeter in prameters)
+            {
+                func.AddParam((DeclNode)ParseDeclaration(paremeter));
+            }
             return graph;
         }
         FlowGraphNode ParseNode(Dictionary<string, object> item)
@@ -95,6 +99,14 @@ namespace WpfApplication2
             if("UnaryOp" == NodeType)
             {
                 node = ParseUnaryOp(item);
+            }
+            if("Assignment" == NodeType)
+            {
+                node = ParseAssigmet(item);
+            }
+            if("Return" == NodeType)
+            {
+                node = ParseReturn(item);
             }
             return node;
         }
@@ -185,11 +197,24 @@ namespace WpfApplication2
             node.right = ParseNode(((Dictionary<string, object>)item["right"]));
             return node;
         }
+        FlowGraphNode ParseAssigmet(Dictionary<string, object> item)
+        {
+            OperationNode node = new OperationNode();
+            node.left = ParseNode(((Dictionary<string, object>)item["lvalue"]));
+            node.right = ParseNode(((Dictionary<string, object>)item["rvalue"]));
+            return node;
+        }
         FlowGraphNode ParseUnaryOp(Dictionary<string, object> item)
         {
-            BinaryOp node = new BinaryOp();
-            node.OP = item["expr"].ToString();
-            node.left = ParseNode(((Dictionary<string, object>)item["left"]));
+            UnaryOp node = new UnaryOp();
+            node.OP = item["op"].ToString();
+            node.left = ParseNode(((Dictionary<string, object>)item["expr"]));
+            return node;
+        }
+        FlowGraphNode ParseReturn(Dictionary<string, object> item)
+        {
+            ReturnNode node = new ReturnNode();
+            node.expr = ParseNode(((Dictionary<string, object>)item["expr"]));
             return node;
         }
         FlowGraphNode ParseIf(Dictionary<string, object> item)
@@ -261,12 +286,12 @@ namespace WpfApplication2
     }
     public class Function
     {
-        List<Variable> parametrs;
+        List<DeclNode> parametrs;
         List<Variable> insidevars;
         public string returntype { get; set; }
         public List<FlowGraphNode> nodes { get; set; }
         public string name { get; set; }
-        public void AddParam(Variable var)
+        public void AddParam(DeclNode var)
         {
             parametrs.Add(var);
         }
@@ -276,7 +301,7 @@ namespace WpfApplication2
         }
         public Function()
         {
-            parametrs = new List<Variable>();
+            parametrs = new List<DeclNode>();
             insidevars = new List<Variable>();
             nodes = null;
         }

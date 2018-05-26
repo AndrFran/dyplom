@@ -20,6 +20,7 @@ namespace WpfApplication2
         E_UN_OP,
         E_FOR,
         E_WHILE,
+        E_RETURN,
         
     }
     public interface FlowGraphNode
@@ -30,8 +31,8 @@ namespace WpfApplication2
 
     public class OperationNode : FlowGraphNode
     {
-        private FlowGraphNode left;
-        private FlowGraphNode right;
+        public FlowGraphNode left { get; set; }
+        public FlowGraphNode right { get; set; }
         NodeType type;
         public OperationNode()
         {
@@ -47,9 +48,17 @@ namespace WpfApplication2
         {
             this.type = type;
         }
+        override public string ToString()
+        {
+            return this.left + "=" + this.right;
+        }
     }
     public class DeclNode : FlowGraphNode
     {
+        public DeclNode()
+        {
+            this.type = NodeType.E_DECL;
+        }
         NodeType type { get; set; }
         public bool isArray { get; set; }
         public bool isPointer { get; set; }
@@ -85,7 +94,7 @@ namespace WpfApplication2
             {
                 inited = "initialized";
             }
-            return inited+"  variable  " + this.DeclName +" of type "+ this.DeclType+array+pointer;
+            return inited+"  variable  " + this.DeclName +"\n of type "+ this.DeclType+array+pointer;
         }
     }
 
@@ -94,7 +103,10 @@ namespace WpfApplication2
         NodeType type { get; set; }
         public string FunctionName { get; set; }
         public List<FlowGraphNode> args { get; set; }
-
+        public FuncCallNode()
+        {
+            this.type = NodeType.E_FUNC_CALL;
+        }
         public NodeType getNodeType()
         {
             return this.type;
@@ -109,7 +121,7 @@ namespace WpfApplication2
             StringBuilder str= new StringBuilder();
             foreach(var arg in this.args)
                 {
-                str.Append(arg.ToString() + "  ");
+                str.Append("\n"+arg.ToString() + "  ");
             }
             return "call  " + this.FunctionName + " with " + str.ToString();
         }
@@ -136,6 +148,11 @@ namespace WpfApplication2
         public void setNodeType(NodeType type)
         {
             this.type = type;
+        }
+
+        override public string ToString()
+        {
+            return "IF(" +condition.ToString()+ ")";
         }
     }
     public class WhileNode : FlowGraphNode
@@ -184,6 +201,7 @@ namespace WpfApplication2
     }
     public class ConstantNode : FlowGraphNode
     {
+
         NodeType type;
         public ConstantNode()
         {
@@ -247,7 +265,10 @@ namespace WpfApplication2
         {
             this.type = type;
         }
-
+        override public string ToString()
+        {
+            return this.left.ToString() +this.OP+this.right.ToString();
+        }
         public string OP { get; set; }
         public FlowGraphNode left;
         public FlowGraphNode right;
@@ -271,5 +292,37 @@ namespace WpfApplication2
 
         public string OP { get; set; }
         public FlowGraphNode left;
+        override public string ToString()
+        {
+            return this.OP + this.left.ToString();
+        }
+
+    }
+
+
+    public class ReturnNode : FlowGraphNode
+    {
+        NodeType type;
+        public ReturnNode()
+        {
+            type = NodeType.E_RETURN;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public FlowGraphNode expr;
+
+        override public string ToString()
+        {
+            return "return " + this.expr.ToString();
+        }
+
     }
 }
