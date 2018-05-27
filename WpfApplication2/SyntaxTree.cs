@@ -17,12 +17,14 @@ namespace WpfApplication2
     }
     class SyntaxTree
     {
+        static int Id;
         List<Dictionary<string, object>> globals;
         List<Dictionary<string,object>> functions;
         List<Function> ParsedFunctions;
         List<FlowGraphNode> graph = null;
         public SyntaxTree()
         {
+            Id = 0;
             globals = new List<Dictionary<string, object>>();
             functions = new List<Dictionary<string, object>>();
             ParsedFunctions = new List<Function>();
@@ -53,19 +55,24 @@ namespace WpfApplication2
             func.name = ((Dictionary<string, object>)(this.functions[id]["decl"]))["name"].ToString();
 
 
-            Dictionary<string, object> type   = (Dictionary<string, object>)((Dictionary<string, object>)(this.functions[id]["decl"]))["type"];
-            func.returntype  = ((ArrayList)((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"])["names"])[0].ToString();
-            
+            Dictionary<string, object> type = (Dictionary<string, object>)((Dictionary<string, object>)(this.functions[id]["decl"]))["type"];
+            func.returntype = ((ArrayList)((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"])["names"])[0].ToString();
+
             ArrayList functionflow = (ArrayList)((Dictionary<string, object>)(this.functions[id]["body"]))["block_items"];
-            foreach(Dictionary<string, object> item in functionflow)
+            foreach (Dictionary<string, object> item in functionflow)
             {
                 addNewNode(ParseNode(item));
             }
-            ArrayList prameters = (ArrayList)(((Dictionary<string, object>)(((Dictionary<string, object>)(((Dictionary<string, object>)(this.functions[id]["decl"]))["type"]))["args"]))["params"]);
-            foreach(Dictionary<string, object>  paremeter in prameters)
-            {
-                func.AddParam((DeclNode)ParseDeclaration(paremeter));
+            Dictionary<string, object> tmp = (((Dictionary<string, object>)(((Dictionary<string, object>)(((Dictionary<string, object>)(this.functions[id]["decl"]))["type"]))["args"])));
+            if (tmp != null)
+            { 
+            ArrayList prameters = (ArrayList)tmp["params"];
+                foreach (Dictionary<string, object> paremeter in prameters)
+                {
+                    func.AddParam((DeclNode)ParseDeclaration(paremeter));
+                }
             }
+            
             ParsedFunctions.Add(func);
             return graph;
         }
@@ -113,12 +120,16 @@ namespace WpfApplication2
             {
                 node = ParseReturn(item);
             }
+            if("While" == NodeType)
+            {
+                node = ParseWhile(item);
+            }
             return node;
         }
 
         FlowGraphNode ParseDeclaration(Dictionary<string, object> item)
         {
-            DeclNode node = new DeclNode();
+            DeclNode node = new DeclNode(Id++);
             Dictionary<string, object> type = null;
             node.DeclName = item["name"].ToString();
             if(null == item["init"])
@@ -162,7 +173,7 @@ namespace WpfApplication2
         }
         FlowGraphNode ParseFuncCall(Dictionary<string, object> item)
         {
-            FuncCallNode node = new FuncCallNode();
+            FuncCallNode node = new FuncCallNode(Id++);
             node.FunctionName = ((Dictionary<string, object>)(item["name"]))["name"].ToString();
             ArrayList arguments = (ArrayList)((Dictionary<string, object>)item["args"])["exprs"];
             List<FlowGraphNode> args = new List<FlowGraphNode>();
@@ -176,27 +187,27 @@ namespace WpfApplication2
         }
         FlowGraphNode ParseConstant(Dictionary<string, object> item)
         {
-            ConstantNode node = new ConstantNode();
+            ConstantNode node = new ConstantNode(Id++);
             node.ValType = item["type"].ToString();
             node.Value = item["value"].ToString();
             return node;
         }
         FlowGraphNode ParseID(Dictionary<string, object> item)
         {
-            ID node = new ID();
+            ID node = new ID(Id++);
             node.Name = item["name"].ToString();
             return node;
         }
         FlowGraphNode ParseArrayRef(Dictionary<string, object> item)
         {
-            ArrayRef node = new ArrayRef();
+            ArrayRef node = new ArrayRef(Id++);
             node.Name = ((Dictionary<string,object>)item["name"])["name"].ToString();
             node.index = ParseNode(((Dictionary<string, object>)item["subscript"]));
             return node;
         }
         FlowGraphNode ParseBinOp(Dictionary<string, object> item)
         {
-            BinaryOp node = new BinaryOp();
+            BinaryOp node = new BinaryOp(Id++);
             node.OP = item["op"].ToString();
             node.left = ParseNode(((Dictionary<string, object>)item["left"]));
             node.right = ParseNode(((Dictionary<string, object>)item["right"]));
@@ -204,27 +215,27 @@ namespace WpfApplication2
         }
         FlowGraphNode ParseAssigmet(Dictionary<string, object> item)
         {
-            OperationNode node = new OperationNode();
+            OperationNode node = new OperationNode(Id++);
             node.left = ParseNode(((Dictionary<string, object>)item["lvalue"]));
             node.right = ParseNode(((Dictionary<string, object>)item["rvalue"]));
             return node;
         }
         FlowGraphNode ParseUnaryOp(Dictionary<string, object> item)
         {
-            UnaryOp node = new UnaryOp();
+            UnaryOp node = new UnaryOp(Id++);
             node.OP = item["op"].ToString();
             node.left = ParseNode(((Dictionary<string, object>)item["expr"]));
             return node;
         }
         FlowGraphNode ParseReturn(Dictionary<string, object> item)
         {
-            ReturnNode node = new ReturnNode();
+            ReturnNode node = new ReturnNode(Id++);
             node.expr = ParseNode(((Dictionary<string, object>)item["expr"]));
             return node;
         }
         FlowGraphNode ParseIf(Dictionary<string, object> item)
         {
-            IfNode node = new IfNode();
+            IfNode node = new IfNode(Id++);
             List<FlowGraphNode> left = new List<FlowGraphNode>();
             List<FlowGraphNode> right = new List<FlowGraphNode>();
             Dictionary<string, object> leftarr = (Dictionary<string, object>)item["iffalse"];
@@ -281,6 +292,34 @@ namespace WpfApplication2
             {
                 graph.Add(node);
             }
+        }
+        FlowGraphNode ParseWhile(Dictionary<string, object> item)
+        {
+            WhileNode node = new WhileNode(Id++);
+            List<FlowGraphNode> stmt = new List<FlowGraphNode>();
+            Dictionary<string, object> leftarr = (Dictionary<string, object>)item["stmt"];
+            if (leftarr != null)
+            {
+                if ("Compound" == leftarr["_nodetype"].ToString())
+                {
+                    ArrayList functionflow = (ArrayList)leftarr["block_items"];
+                    if (functionflow != null)
+                    {
+                        foreach (Dictionary<string, object> argument in functionflow)
+                        {
+                            stmt.Add(ParseNode(argument));
+                        }
+                    }
+                }
+                else
+                {
+                    stmt.Add(ParseNode(leftarr));
+                }
+            }
+           
+            node.loop = stmt;
+            node.condition = ParseNode((Dictionary<string, object>)item["cond"]);
+            return node;
         }
     }
     public class Variable

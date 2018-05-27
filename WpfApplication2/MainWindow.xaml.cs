@@ -28,7 +28,7 @@ namespace WpfApplication2
         {
             InitializeComponent();
         }
-
+ 
         private void button_Click(object sender, RoutedEventArgs e)
         {
             var person = new Person
@@ -74,7 +74,7 @@ namespace WpfApplication2
             {
                 
                 string json =System.IO.File.ReadAllText(openFileDialog.FileName);
-                Presenter presenter = new Presenter();
+                Presenter presenter = Presenter.Instance;
                 int y = 0 ;
                 presenter.ParseFuncNames(json);
                 List<UIElement> nodes = presenter.BuildFlowControlGraph(ref y);

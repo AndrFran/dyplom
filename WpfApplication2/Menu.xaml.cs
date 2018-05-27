@@ -24,10 +24,11 @@ namespace WpfApplication2
         {
             InitializeComponent();
         }
-         private void TestCases(object sender, RoutedEventArgs e)
+    private void TestCases(object sender, RoutedEventArgs e)
     {
-
-    }
+            MainWindow win2 = new MainWindow();
+            win2.Show();
+        }
 
     private void Settings(object sender, RoutedEventArgs e)
     {

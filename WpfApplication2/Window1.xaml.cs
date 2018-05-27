@@ -33,10 +33,12 @@ namespace WpfApplication2
             string commadn2 = pythonpath + " " + "examples\\c_json.py  " + input.Text.ToString();
 
             string Text = "/C "+strCmdText + "&"+ commadn2;
-            System.Diagnostics.Process.Start("CMD.exe", Text);
-            Presenter preseter = new Presenter();
+            Process process = System.Diagnostics.Process.Start("CMD.exe", Text);
+            process.WaitForExit();
+            Presenter preseter = Presenter.Instance;
             List<string> names = preseter.ParseFuncNames(System.IO.File.ReadAllText("C:\\Users\\corov\\Desktop\\Dyplom\\pycparser-master\\ssss.json"));
-            foreach(string str in names)
+            listBox.Items.Clear();
+            foreach (string str in names)
             {
                 listBox.Items.Add(new CheckBox() { IsChecked = false, Content = str});
             }
@@ -64,6 +66,9 @@ namespace WpfApplication2
             }
         }
 
+        private void button2_Copy_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
     }
     }

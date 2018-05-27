@@ -12,15 +12,31 @@ namespace WpfApplication2
 {
     public class Presenter
     {
+        private static Presenter instance;
         SyntaxTree tree;
+
+        #region pidor
         int depth;
         const int linelenght = 20;
         const int smallLineshift = 5;
         public List<MyGrid> grids;
-        public Presenter()
+        #endregion
+        public static List<String> chosen { get; set; }
+        private  Presenter()
         {
             tree = new SyntaxTree();
             grids = new List<MyGrid>();
+        }
+        public static Presenter Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new Presenter();
+                }
+                return instance;
+            }
         }
         MyGrid getNextRect(int x,int y,FlowGraphNode node)
         {
@@ -119,13 +135,14 @@ namespace WpfApplication2
         public List<string> ParseFuncNames(string json)
         {
             JsonParser parser = new JsonParser();
-            return tree.Create(parser.Deserialize(json));
+            chosen= tree.Create(parser.Deserialize(json));
+            return chosen;
         }
         public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y)
         {
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             grids = new List<MyGrid>();
-            List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(0);
+            List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(1);
             shapes = generateShapes(Nodes, 300, ref y );
             return shapes;
         }
@@ -139,6 +156,10 @@ namespace WpfApplication2
                 {
                     case NodeType.E_WHILE:
                         {
+                            WhileNode whilenode = (WhileNode)node;
+                            grids.Add(getNextDiamond(x, y, node));
+                            y += 75;
+                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y));
                             break;
                         }
                     case NodeType.E_IF:

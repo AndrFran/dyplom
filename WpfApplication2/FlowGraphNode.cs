@@ -27,16 +27,20 @@ namespace WpfApplication2
     {
         NodeType getNodeType();
         void setNodeType(NodeType type);
+        int getId();
+        
     }
 
     public class OperationNode : FlowGraphNode
     {
+        int id;
         public FlowGraphNode left { get; set; }
         public FlowGraphNode right { get; set; }
         NodeType type;
-        public OperationNode()
+        public OperationNode(int id)
         {
             this.type = NodeType.E_ASSIGMENT;
+            this.id = id;
         }
 
         public NodeType getNodeType()
@@ -52,11 +56,19 @@ namespace WpfApplication2
         {
             return this.left + "=" + this.right;
         }
+
+        public int getId()
+        {
+            return this.id;
+        }
+
     }
     public class DeclNode : FlowGraphNode
     {
-        public DeclNode()
+        int id;
+        public DeclNode(int id)
         {
+            this.id = id;
             this.type = NodeType.E_DECL;
         }
         NodeType type { get; set; }
@@ -96,15 +108,21 @@ namespace WpfApplication2
             }
             return inited+"  variable  " + this.DeclName +"\n of type "+ this.DeclType+array+pointer;
         }
+        public int getId()
+        {
+            return this.id;
+        }
     }
 
     public class FuncCallNode : FlowGraphNode
     {
+        int id;
         NodeType type { get; set; }
         public string FunctionName { get; set; }
         public List<FlowGraphNode> args { get; set; }
-        public FuncCallNode()
+        public FuncCallNode(int id)
         {
+            this.id = id;
             this.type = NodeType.E_FUNC_CALL;
         }
         public NodeType getNodeType()
@@ -125,13 +143,19 @@ namespace WpfApplication2
             }
             return "call  " + this.FunctionName + " with " + str.ToString();
         }
+        public int getId()
+        {
+            return this.id;
+        }
     }
 
     public class IfNode : FlowGraphNode
     {
+        int id;
         NodeType type { get; set; }
-        public IfNode()
+        public IfNode(int id )
         {
+            this.id = id;
             this.type = NodeType.E_IF;
 
         }
@@ -154,14 +178,19 @@ namespace WpfApplication2
         {
             return "IF(" +condition.ToString()+ ")";
         }
+        public int getId()
+        {
+            return this.id;
+        }
     }
     public class WhileNode : FlowGraphNode
     {
+        int id;
         NodeType type { get; set; }
-        public WhileNode()
+        public WhileNode(int id)
         {
             this.type = NodeType.E_WHILE;
-
+            this.id = id;
         }
         public FlowGraphNode condition { get; set; }
 
@@ -176,12 +205,23 @@ namespace WpfApplication2
         {
             this.type = type;
         }
+        public int getId()
+        {
+            return this.id;
+        }
+
+        override public string ToString()
+        {
+            return "While "+this.condition.ToString();
+        }
     }
     public class ID : FlowGraphNode
     {
+        int id;
         NodeType type;
-        public ID()
+        public ID(int id)
         {
+            this.id = id;
             type = NodeType.E_ID;
         }
         public NodeType getNodeType()
@@ -198,13 +238,18 @@ namespace WpfApplication2
             return this.Name;
         }
         public string Name { get; set; }
+        public int getId()
+        {
+            return this.id;
+        }
     }
     public class ConstantNode : FlowGraphNode
     {
-
+        int id;
         NodeType type;
-        public ConstantNode()
+        public ConstantNode(int id)
         {
+            this.id = id;
             type = NodeType.E_COSNT;
         }
         public NodeType getNodeType()
@@ -223,12 +268,18 @@ namespace WpfApplication2
         {
             return this.Value.ToString();
         }
+        public int getId()
+        {
+            return this.id;
+        }
     }
     public class ArrayRef: FlowGraphNode
     {
+        int id;
         NodeType type;
-        public ArrayRef()
+        public ArrayRef(int id)
         {
+            this.id=id;
             this.type = NodeType.E_ARRAY_REF;
         }
         public NodeType getNodeType()
@@ -248,12 +299,18 @@ namespace WpfApplication2
         {
             return this.Name + "["+index.ToString()+"]";
         }
+        public int getId()
+        {
+            return this.id;
+        }
     }
     public class BinaryOp : FlowGraphNode
     {
+        int id;
         NodeType type;
-        public BinaryOp()
+        public BinaryOp(int id)
         {
+            this.id = id;
             this.type = NodeType.E_BIN_OP;
         }
         public NodeType getNodeType()
@@ -272,12 +329,18 @@ namespace WpfApplication2
         public string OP { get; set; }
         public FlowGraphNode left;
         public FlowGraphNode right;
+        public int getId()
+        {
+            return this.id;
+        }
     }
     public class UnaryOp : FlowGraphNode
     {
+        int id;
         NodeType type;
-        public UnaryOp()
+        public UnaryOp(int id)
         {
+            this.id = id;
             type = NodeType.E_UN_OP;
         }
         public NodeType getNodeType()
@@ -296,15 +359,21 @@ namespace WpfApplication2
         {
             return this.OP + this.left.ToString();
         }
+        public int getId()
+        {
+            return this.id;
+        }
 
     }
 
 
     public class ReturnNode : FlowGraphNode
     {
+        int id;
         NodeType type;
-        public ReturnNode()
+        public ReturnNode(int id)
         {
+            this.id = id;
             type = NodeType.E_RETURN;
         }
         public NodeType getNodeType()
@@ -323,6 +392,9 @@ namespace WpfApplication2
         {
             return "return " + this.expr.ToString();
         }
-
+        public int getId()
+        {
+            return this.id;
+        }
     }
 }

@@ -19,7 +19,7 @@
         <Button x:Name="button" Content="..." HorizontalAlignment="Left" Margin="416,160,0,0" VerticalAlignment="Top" Width="26" Click="button_Click"/>
         <Button x:Name="button1" Content="..." HorizontalAlignment="Left" Margin="416,210,0,0" VerticalAlignment="Top" Width="26" Click="button1_Click"/>
         <Button x:Name="button2" Content="Get function names" HorizontalAlignment="Left" Margin="10,257,0,0" VerticalAlignment="Top" Width="446" Click="button2_Click"/>
-        <Button x:Name="button2_Copy" Content="Generate testcases for functions" HorizontalAlignment="Left" Margin="10,282,0,0" VerticalAlignment="Top" Width="446" RenderTransformOrigin="0.494,1.95"/>
+        <Button x:Name="button2_Copy" Content="Generate testcases for functions" HorizontalAlignment="Left" Margin="10,282,0,0" VerticalAlignment="Top" Width="446" RenderTransformOrigin="0.494,1.95" Click="button2_Copy_Click"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,26,0,157" RenderTransformOrigin="0.503,0.956">
             <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="203" VerticalAlignment="Top" Width="456">
             </ListBox>
