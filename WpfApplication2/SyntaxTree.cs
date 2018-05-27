@@ -8,13 +8,7 @@ using System.Threading.Tasks;
 
 namespace WpfApplication2
 {
-    enum OperationType
-    {
-        E_ASSIGMEN,
-        E_FUNCTION_CALL,
-        
 
-    }
     class SyntaxTree
     {
         static int Id;
@@ -350,16 +344,7 @@ namespace WpfApplication2
             nodes = null;
         }
     }
-    public class TestCase
-    {
-        string name { get; set; }
-        int id   { get; set; }
-
-        IEnumerable<Variable> SetUpVariables;
-        IEnumerable<Function> FuncCalls;
-        IEnumerable<Operation> operations { get; set; }
-
-    }
+   
     public class Operation
     {
         void Oparation()

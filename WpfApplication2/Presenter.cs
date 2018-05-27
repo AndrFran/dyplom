@@ -143,6 +143,8 @@ namespace WpfApplication2
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             grids = new List<MyGrid>();
             List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(1);
+            TestCaseBuilder builder = new TestCaseBuilder();
+            builder.BuildTestCases(Nodes);
             shapes = generateShapes(Nodes, 300, ref y );
             return shapes;
         }
@@ -156,10 +158,24 @@ namespace WpfApplication2
                 {
                     case NodeType.E_WHILE:
                         {
+                            int whiley = 0;
                             WhileNode whilenode = (WhileNode)node;
                             grids.Add(getNextDiamond(x, y, node));
-                            y += 75;
+                            System.Windows.UIElement el = getNextDiamond(x, y, node);
+                            el.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                            System.Windows.Size size = el.DesiredSize;
+
+                            y += (int)size.Height+20;
+                            whiley = y - ((int)size.Height + 20)/2;
+                            shapes.AddRange(getNextLine(x, y));
+                            y += 20;
                             shapes.AddRange(generateShapes(whilenode.loop, x, ref y));
+                            shapes.Add(new Line() { X1 = x, X2 = x-150, Y1 = y, Y2 = y, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x-150, X2 = x - 150, Y1 = y, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.AddRange(getNextLine(x, y));
+                            y += 20;
+
                             break;
                         }
                     case NodeType.E_IF:
