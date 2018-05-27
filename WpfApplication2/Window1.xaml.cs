@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WpfApplication2
 {
@@ -23,5 +24,46 @@ namespace WpfApplication2
         {
             InitializeComponent();
         }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            string strCmdText;
+            strCmdText = "cd C:\\Users\\corov\\Desktop\\Dyplom\\pycparser-master";
+            string pythonpath = "python";
+            string commadn2 = pythonpath + " " + "examples\\c_json.py  " + input.Text.ToString();
+
+            string Text = "/C "+strCmdText + "&"+ commadn2;
+            System.Diagnostics.Process.Start("CMD.exe", Text);
+            Presenter preseter = new Presenter();
+            List<string> names = preseter.ParseFuncNames(System.IO.File.ReadAllText("C:\\Users\\corov\\Desktop\\Dyplom\\pycparser-master\\ssss.json"));
+            foreach(string str in names)
+            {
+                listBox.Items.Add(new CheckBox() { IsChecked = false, Content = str});
+            }
+
+        }
+      
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+
+                input.Text = openFileDialog.FileName;
+            }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+
+                output.Text = openFileDialog.FileName;
+            }
+        }
+
+
     }
-}
+    }

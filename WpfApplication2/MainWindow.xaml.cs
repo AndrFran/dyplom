@@ -76,7 +76,8 @@ namespace WpfApplication2
                 string json =System.IO.File.ReadAllText(openFileDialog.FileName);
                 Presenter presenter = new Presenter();
                 int y = 0 ;
-                List<UIElement> nodes = presenter.BuildFlowControlGraph(json,ref y);
+                presenter.ParseFuncNames(json);
+                List<UIElement> nodes = presenter.BuildFlowControlGraph(ref y);
                 DrawingField.Height = y;
                 foreach (var elem in nodes)
                 {

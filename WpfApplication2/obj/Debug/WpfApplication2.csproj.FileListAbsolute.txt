@@ -42,3 +42,6 @@ C:\Users\andriy.franko\Downloads\Dyplom\WpfApplication2\WpfApplication2\obj\Debu
 C:\Users\corov\Downloads\WpfApplication2-20180523T183230Z-001\WpfApplication2\WpfApplication2\bin\Debug\WpfApplication2.exe.config
 C:\Users\corov\Downloads\WpfApplication2-20180523T183230Z-001\WpfApplication2\WpfApplication2\obj\Debug\WpfApplication2.exe
 C:\Users\corov\Downloads\WpfApplication2-20180523T183230Z-001\WpfApplication2\WpfApplication2\obj\Debug\WpfApplication2.pdb
+C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\obj\Debug\Menu.g.cs
+C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\obj\Debug\Menu.baml

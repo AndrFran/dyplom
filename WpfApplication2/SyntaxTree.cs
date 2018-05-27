@@ -19,21 +19,24 @@ namespace WpfApplication2
     {
         List<Dictionary<string, object>> globals;
         List<Dictionary<string,object>> functions;
+        List<Function> ParsedFunctions;
         List<FlowGraphNode> graph = null;
         public SyntaxTree()
         {
             globals = new List<Dictionary<string, object>>();
             functions = new List<Dictionary<string, object>>();
+            ParsedFunctions = new List<Function>();
         }
 
-        public void Create(Dictionary<string, object> dic)
+        public List<string> Create(Dictionary<string, object> dic)
         {
-
+            List<string> names = new List<string>();
             ArrayList val=(ArrayList) dic["ext"];
             foreach(Dictionary<string, object> value in val)
             {
                 if("FuncDef"== value["_nodetype"].ToString())
                 {
+                    names.Add(((Dictionary<string, object>)(value["decl"]))["name"].ToString());
                     functions.Add(value);
                 }
                 else
@@ -41,6 +44,7 @@ namespace WpfApplication2
                     globals.Add(value);
                 }
             }
+            return names;
         }
         public List<FlowGraphNode> CreateFlowControlGraph(int id)
         {
@@ -62,6 +66,7 @@ namespace WpfApplication2
             {
                 func.AddParam((DeclNode)ParseDeclaration(paremeter));
             }
+            ParsedFunctions.Add(func);
             return graph;
         }
         FlowGraphNode ParseNode(Dictionary<string, object> item)

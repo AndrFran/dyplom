@@ -12,12 +12,14 @@ namespace WpfApplication2
 {
     public class Presenter
     {
+        SyntaxTree tree;
         int depth;
         const int linelenght = 20;
         const int smallLineshift = 5;
         public List<MyGrid> grids;
         public Presenter()
         {
+            tree = new SyntaxTree();
             grids = new List<MyGrid>();
         }
         MyGrid getNextRect(int x,int y,FlowGraphNode node)
@@ -114,12 +116,15 @@ namespace WpfApplication2
             //l.Add(myLine2);
             return l;
         }
-        public List<System.Windows.UIElement> BuildFlowControlGraph(string json,ref int y)
+        public List<string> ParseFuncNames(string json)
+        {
+            JsonParser parser = new JsonParser();
+            return tree.Create(parser.Deserialize(json));
+        }
+        public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y)
         {
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
-            JsonParser parser = new JsonParser();
-            SyntaxTree tree = new SyntaxTree();
-            tree.Create(parser.Deserialize(json));
+            grids = new List<MyGrid>();
             List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(0);
             shapes = generateShapes(Nodes, 300, ref y );
             return shapes;
