@@ -138,13 +138,26 @@ namespace WpfApplication2
             chosen= tree.Create(parser.Deserialize(json));
             return chosen;
         }
+        public TestCases generateCases(List<string> funcnames)
+        {
+            TestCases cases = new TestCases();
+            tree.ParseFunctions();
+            List<Function> funcs = tree.GetFunctionByNames(funcnames);
+            TestCaseBuilder builder = new TestCaseBuilder();
+            foreach(Function f in funcs)
+            {
+                builder.BuildTestCases(f);
+            }
+            return cases;
+        }
         public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y)
         {
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             grids = new List<MyGrid>();
+            //GetFunctionByNames
             List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(1);
             TestCaseBuilder builder = new TestCaseBuilder();
-            builder.BuildTestCases(Nodes);
+            //builder.BuildTestCases(Nodes);
             shapes = generateShapes(Nodes, 300, ref y );
             return shapes;
         }

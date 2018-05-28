@@ -68,7 +68,17 @@ namespace WpfApplication2
 
         private void button2_Copy_Click(object sender, RoutedEventArgs e)
         {
-
+            Presenter preseter = Presenter.Instance;
+            List<string> names = new List<string>();
+            foreach(CheckBox box in listBox.Items)
+            {
+                if(true == box.IsChecked)
+                {
+                    names.Add(box.Content.ToString());
+                    
+                }
+            }
+            preseter.generateCases(names);
         }
     }
     }

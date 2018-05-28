@@ -13,9 +13,9 @@ namespace WpfApplication2
         {
 
         }
-        public List<List<int>> CalculateAllPathes(List<FlowGraphNode> nodes)
+        public List<List<FlowGraphNode>> CalculateAllPathes(List<FlowGraphNode> nodes)
         {
-            List<List<int>> Pathes= new List<List<int>>();
+            List<List<FlowGraphNode>> Pathes= new List<List<FlowGraphNode>>();
             foreach (FlowGraphNode node in nodes)
             {
 
@@ -26,27 +26,27 @@ namespace WpfApplication2
                             WhileNode whilenode = (WhileNode)node;
                             if (Pathes.Count == 0)
                             {
-                                Pathes.Add(new List<int>() { whilenode.getId() });
+                                Pathes.Add(new List<FlowGraphNode>() { whilenode });
                             }
                             else
                             {
                                 for (int i = 0; i < Pathes.Count; i++)
                                 {
-                                    Pathes[i].Add(whilenode.getId());
+                                    Pathes[i].Add(whilenode);
                                 }
                             }
-                            List<List<int>> dublicate = new List<List<int>>();
-                            foreach (List<int> ls in Pathes)
+                            List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
+                            foreach (List<FlowGraphNode> ls in Pathes)
                             {
-                                List<int> tmp = new List<int>();
+                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
                                 tmp.AddRange(ls);
                                 dublicate.Add(tmp);
                             }
                             if (whilenode.loop != null)
                             {
-                                List<List<int>> recursive = CalculateAllPathes(whilenode.loop);
+                                List<List<FlowGraphNode>> recursive = CalculateAllPathes(whilenode.loop);
 
-                                foreach (List<int> ls in recursive)
+                                foreach (List<FlowGraphNode> ls in recursive)
                                 {
                                     for (int j = 0; j < Pathes.Count; j++)
                                     {
@@ -54,7 +54,7 @@ namespace WpfApplication2
                                     }
                                 }
                             }
-                            foreach (List<int> ls in dublicate)
+                            foreach (List<FlowGraphNode> ls in dublicate)
                             {
                                 Pathes.Add(ls);
                             }
@@ -65,27 +65,27 @@ namespace WpfApplication2
                                 IfNode ifnode = (IfNode)node;
                                 if (Pathes.Count == 0)
                                 {
-                                    Pathes.Add(new List<int>() { ifnode.getId() });
+                                    Pathes.Add(new List<FlowGraphNode>() { ifnode});
                                 }
                                 else
                                 {
                                     for (int i = 0; i < Pathes.Count; i++)
                                     {
-                                        Pathes[i].Add(node.getId());
+                                        Pathes[i].Add(node);
                                     }
                                 }
-                            List<List<int>> dublicate = new List<List<int>>();
-                            foreach (List<int> ls in Pathes)
+                            List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
+                            foreach (List<FlowGraphNode> ls in Pathes)
                             {
-                                List<int> tmp = new List<int>();
+                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
                                 tmp.AddRange(ls);
                                 dublicate.Add(tmp);
                             }
                             if (ifnode.left != null)
                             {
-                                List<List<int>> recursive = CalculateAllPathes(ifnode.left);
+                                List<List<FlowGraphNode>> recursive = CalculateAllPathes(ifnode.left);
                               
-                                foreach (List<int> ls in recursive)
+                                foreach (List<FlowGraphNode> ls in recursive)
                                 {
                                     for(int j=0;j<Pathes.Count;j++)
                                     {
@@ -95,9 +95,9 @@ namespace WpfApplication2
                             }
                             if (ifnode.right != null)
                             {
-                                List<List<int>> recursive = CalculateAllPathes(ifnode.right);
+                                List<List<FlowGraphNode>> recursive = CalculateAllPathes(ifnode.right);
 
-                                foreach (List<int> ls in recursive)
+                                foreach (List<FlowGraphNode> ls in recursive)
                                 {
                                     for (int j = 0; j < dublicate.Count; j++)
                                     {
@@ -105,7 +105,7 @@ namespace WpfApplication2
                                     }
                                 }
                             }
-                            foreach (List<int> ls in dublicate)
+                            foreach (List<FlowGraphNode> ls in dublicate)
                             {
                                 Pathes.Add(ls);
                             }
@@ -115,13 +115,13 @@ namespace WpfApplication2
                         {
                             if(Pathes.Count == 0)
                             {
-                                Pathes.Add(new List<int>() { node.getId()});
+                                Pathes.Add(new List<FlowGraphNode>() { node});
                             }
                             else
                             {
                                 for(int i=0;i<Pathes.Count;i++)
                                 {
-                                    Pathes[i].Add(node.getId());
+                                    Pathes[i].Add(node);
                                 }
                             }
                             break;

@@ -21,7 +21,12 @@ namespace WpfApplication2
         E_FOR,
         E_WHILE,
         E_RETURN,
-        
+        E_TYPEDEF,
+        E_TYPEDECL,
+        E_STRUCT,
+        E_ENUM,
+        E_ENUMVALUE,
+        E_STRUCTREF,
     }
     public interface FlowGraphNode
     {
@@ -304,6 +309,38 @@ namespace WpfApplication2
             return this.id;
         }
     }
+    public class StructRef : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public StructRef(int id)
+        {
+            this.id = id;
+            this.type = NodeType.E_STRUCTREF;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string reftype { get; set; }
+        public FlowGraphNode structfield { get; set; }
+        public FlowGraphNode structname { get; set; }
+        override public string ToString()
+        {
+            return this.structname.ToString() + reftype + structfield.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
     public class BinaryOp : FlowGraphNode
     {
         int id;
@@ -391,6 +428,169 @@ namespace WpfApplication2
         override public string ToString()
         {
             return "return " + this.expr.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+    public class TypeDef : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public TypeDef(int id)
+        {
+            this.id = id;
+            type = NodeType.E_TYPEDEF;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string name;
+        public FlowGraphNode TypeDecl;
+
+        override public string ToString()
+        {
+            return "type " + this.name.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+
+    public class TypeDecl : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public TypeDecl(int id)
+        {
+            this.id = id;
+            type = NodeType.E_TYPEDEF;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string name;
+        public FlowGraphNode Type;
+
+        override public string ToString()
+        {
+            return "type " + this.name.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+    public class StructNode : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public StructNode(int id)
+        {
+            this.id = id;
+            type = NodeType.E_STRUCT;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        
+        public List<FlowGraphNode> Decl;
+
+        override public string ToString()
+        {
+            
+            return "struct ";
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+    public class EnumNode : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public EnumNode(int id)
+        {
+            this.id = id;
+            type = NodeType.E_ENUM;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+
+        public List<FlowGraphNode> Values;
+        public string name;
+        override public string ToString()
+        {
+
+            return this.name;
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+    public class EnumValue : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public EnumValue(int id)
+        {
+            this.id = id;
+            type = NodeType.E_ENUMVALUE;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+
+        public string value;
+
+        override public string ToString()
+        {
+
+            return value;
         }
         public int getId()
         {

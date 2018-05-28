@@ -1,16 +1,68 @@
-Hello {{FirstName}}
-Your age is {{Age}}!
-{{#PrintLastName}}
-Well, your last name is {{LastName}}
-{{/PrintLastName}}
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <string.h>
+#include <cmocka.h>
 
-And your child(s) are:
-{{#ChildNames}}
-  {{Value}}
-{{/ChildNames}}
+#include "{{filename.h}}"
 
+static int TestID;
 
-And your parrent(s) are:
-{{#ParentNames}}
-  {{Value}}
-{{/ParentNames}}
+static void setup()
+{
+	switch(TestID)
+	{
+	{{#testcases}}
+		case : {{id}}
+		{
+			
+			break;
+		}
+	{{/testcases}}
+	}
+}
+static void teardown()
+{
+	switch(TestID)
+	{
+	{{#testcases}}
+		case : {{id}}
+		{
+			
+			break;
+		}
+	{{/testcases}}
+	}
+}
+/*Scenario: Some determinable business situation
+     Given some precondition
+       And some other precondition
+     When some action by the actor
+      And some other action
+       And yet another action
+    Then some testable outcome is achieved
+      And something else we can check happens too*/
+{{#testcases}}
+static void test_case_{{function_name}}_{{id}}()
+{
+	//declare intput arguments
+	{{#Arguments}}
+	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
+	{{/Arguments}}
+	TestID = {{id}};
+	//call function
+	{{function_name}}({{#Arguments}}{{name}}{{/Arguments}});
+}
+{{/testcases}}
+
+int main(void) {
+    const struct CMUnitTest tests[] = {
+		{{#testcases}}
+	cmocka_unit_test_setup_teardown(
+		test_case_{{function_name}}_{{id}},setup,teardown
+		)
+		{{/testcases}}
+		)
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

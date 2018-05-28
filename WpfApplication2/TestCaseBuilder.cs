@@ -15,30 +15,81 @@ namespace WpfApplication2
         E_POINTER_CHECK,
         E_GLOBAL_CHECK
     }
+    public class Variable
+    {
+        public string type { get; set; }
+        public string name { get; set; }
+        public string value { get; set; }
+        public string isarray{ get; set; }
+        public string ispointer { get; set; }
+}
     public class TestCase
     {
-        string name { get; set; }
-        List<int> path;
+
+        public string function_name { get; set; }
         public TestCaseType type { get; set; }
-        int id { get; set; }
-        IEnumerable<Variable> checkvars;
-        IEnumerable<Variable> SetUpVariables;
-        IEnumerable<Function> FuncCalls;
-        IEnumerable<FlowGraphNode> operations { get; set; }
+        public int id { get; set; }
+        public IEnumerable<Variable> CheckVars { get; set; }
+        public IEnumerable<Variable> Arguments { get; set; }
+        public IEnumerable<Function> FuncCalls { get; set; }
+        public IEnumerable<FlowGraphNode> path { get; set; }
+    }
+
+    public class TestCases
+    {
+        public string filename { get; set; }
+        IEnumerable<TestCase> testcases { get; set; }
+
     }
     public class TestCaseBuilder
     {
+        static int id;
         public TestCaseBuilder()
         {
 
         }
-        public List<TestCase> BuildTestCases(List<FlowGraphNode> nodes)
+        public List<TestCase> BuildTestCases(Function f)
         {
             List<TestCase> testcases = new List<TestCase>();
             FlowGraphWalker graphwalker = new FlowGraphWalker();
-            List<List<int>> pathes = graphwalker.CalculateAllPathes(nodes);
-
-            return testcases;
+            List<List<FlowGraphNode>> pathes = graphwalker.CalculateAllPathes(f.nodes);
+            foreach (List<FlowGraphNode> path in pathes)
+            {
+                TestCase NewCase = new TestCase();
+                List<Variable> args = new List<Variable>();
+                foreach(DeclNode node in f.Getparams())
+                {
+                    Variable v = new Variable();
+                    v.name = node.DeclName;
+                    v.type = node.DeclType;
+                    if(true == node.isArray)
+                    {
+                        v.ispointer = "*";
+                    }
+                    else
+                    {
+                        v.ispointer = "";
+                    }
+                    if(true == node.isArray)
+                    {
+                        v.isarray = "[]";
+                    }
+                    else
+                    {
+                        v.isarray = "";
+                    }
+                    v.value = "{0}";
+                    //calc var value
+                    args.Add(v);
+                }
+                NewCase.Arguments = args.AsEnumerable();
+                NewCase.function_name = f.name;
+                if(f.returntype != null)
+                {
+                    NewCase.type = TestCaseType.E_RETURN_CHECK_INT;
+                }
+            }
+                    return testcases;
         }
     }
 }

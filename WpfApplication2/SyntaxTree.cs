@@ -42,20 +42,59 @@ namespace WpfApplication2
             }
             return names;
         }
+        public List<Function> GetFunctionByNames(List<string> names)
+        {
+            List<Function> functions = new List<Function>();
+            foreach (Function func in this.ParsedFunctions)
+                {
+                if (names.Contains(func.name))
+                {
+                    functions.Add(func);
+                }
+            }
+            return functions;
+        }
+        public void ParseFunctions()
+        {
+            for(int i =0;i<this.functions.Count;i++)
+            {
+                CreateFlowControlGraph(i);
+            } 
+        }
         public List<FlowGraphNode> CreateFlowControlGraph(int id)
         {
+            if (graph != null)
+            { 
+            graph.Clear();
+        }
             Function func = new Function();
 
             func.name = ((Dictionary<string, object>)(this.functions[id]["decl"]))["name"].ToString();
 
 
             Dictionary<string, object> type = (Dictionary<string, object>)((Dictionary<string, object>)(this.functions[id]["decl"]))["type"];
-            func.returntype = ((ArrayList)((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"])["names"])[0].ToString();
-
+            //func.returntype = 
+            Dictionary<string, object> ls = ((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"]);
+            ArrayList returntype;
+            if (ls.ContainsKey("names"))
+            {
+                returntype = (ArrayList)ls["names"];
+            }
+            else
+            {
+                ls = ((Dictionary<string, object>)((Dictionary<string, object>)ls["type"]));
+                returntype = (ArrayList)ls["names"];
+            }
+            StringBuilder str = new StringBuilder();
+            foreach(string s in returntype)
+            {
+                str.Append(s+" ");
+            }
+            func.returntype = str.ToString();
             ArrayList functionflow = (ArrayList)((Dictionary<string, object>)(this.functions[id]["body"]))["block_items"];
             foreach (Dictionary<string, object> item in functionflow)
             {
-                addNewNode(ParseNode(item));
+                func.nodes.Add(ParseNode(item));
             }
             Dictionary<string, object> tmp = (((Dictionary<string, object>)(((Dictionary<string, object>)(((Dictionary<string, object>)(this.functions[id]["decl"]))["type"]))["args"])));
             if (tmp != null)
@@ -66,7 +105,6 @@ namespace WpfApplication2
                     func.AddParam((DeclNode)ParseDeclaration(paremeter));
                 }
             }
-            
             ParsedFunctions.Add(func);
             return graph;
         }
@@ -117,6 +155,30 @@ namespace WpfApplication2
             if("While" == NodeType)
             {
                 node = ParseWhile(item);
+            }
+            if ("Typedef" == NodeType)
+            {
+                node = ParseTypeDef(item);
+            }
+            if ("TypeDecl" == NodeType)
+            {
+                node = ParseTypeDecl(item);
+            }
+            if ("Enum" == NodeType)
+            {
+                node = ParseEnum(item);
+            }
+            if ("Enumerator" == NodeType)
+            {
+                node = ParseEnumValue(item);
+            }
+            if("Struct" == NodeType)
+            {
+                node = ParseStruct(item);
+            }
+            if("StructRef" == NodeType)
+            {
+                node = ParseStructRef(item);
             }
             return node;
         }
@@ -199,6 +261,14 @@ namespace WpfApplication2
             node.index = ParseNode(((Dictionary<string, object>)item["subscript"]));
             return node;
         }
+        FlowGraphNode ParseStructRef(Dictionary<string, object> item)
+        {
+            StructRef node = new StructRef(Id++);
+            node.reftype = item["type"].ToString();
+            node.structfield = ParseNode(((Dictionary<string, object>)item["field"]));
+            node.structname = ParseNode(((Dictionary<string, object>)item["name"]));
+            return node;
+        }
         FlowGraphNode ParseBinOp(Dictionary<string, object> item)
         {
             BinaryOp node = new BinaryOp(Id++);
@@ -221,9 +291,56 @@ namespace WpfApplication2
             node.left = ParseNode(((Dictionary<string, object>)item["expr"]));
             return node;
         }
+        FlowGraphNode ParseTypeDef(Dictionary<string, object> item)
+        {
+            TypeDef node = new TypeDef(Id++);
+            node.name = item["name"].ToString();
+            node.TypeDecl = ParseNode(((Dictionary<string, object>)item["type"]));
+            return node;
+        }
+        FlowGraphNode ParseTypeDecl(Dictionary<string, object> item)
+        {
+            TypeDecl node = new TypeDecl(Id++);
+            if (item.ContainsKey("name"))
+            {
+                node.name = item["name"].ToString();
+            }
+                node.Type = ParseNode(((Dictionary<string, object>)item["type"]));
+            return node;
+        }
+        FlowGraphNode ParseStruct(Dictionary<string, object> item)
+        {
+            StructNode node = new StructNode(Id++);
+            node.Decl = new List<FlowGraphNode>();
+            ArrayList decls = (ArrayList)item["decls"];
+            foreach (Dictionary<string, object> decl in decls)
+            {
+                node.Decl.Add(ParseNode(decl));
+            }
+            return node;
+        }
+        FlowGraphNode ParseEnum(Dictionary<string, object> item)
+        {
+            EnumNode node = new EnumNode(Id++);
+            node.name = item["name"].ToString();
+            node.Values = new List<FlowGraphNode>();
+            ArrayList values = (ArrayList)((Dictionary<string,object>)item["values"])["enumerators"];
+            foreach (Dictionary<string, object> val in values)
+            {
+                node.Values.Add(ParseNode(val));
+            }
+            return node;
+        }
+        FlowGraphNode ParseEnumValue(Dictionary<string, object> item)
+        {
+            EnumNode node = new EnumNode(Id++);
+            node.name = item["name"].ToString();
+            return node;
+        }
         FlowGraphNode ParseReturn(Dictionary<string, object> item)
         {
             ReturnNode node = new ReturnNode(Id++);
+            if(item["expr"]!=null)
             node.expr = ParseNode(((Dictionary<string, object>)item["expr"]));
             return node;
         }
@@ -316,16 +433,10 @@ namespace WpfApplication2
             return node;
         }
     }
-    public class Variable
-    {
-        public string type { get; set; }
-        public string name { get; set; }
-        public string value { get; set; }
-    }
+
     public class Function
     {
         List<DeclNode> parametrs;
-        List<Variable> insidevars;
         public string returntype { get; set; }
         public List<FlowGraphNode> nodes { get; set; }
         public string name { get; set; }
@@ -333,15 +444,14 @@ namespace WpfApplication2
         {
             parametrs.Add(var);
         }
-        public void AddInternalParam(Variable var)
+        public List<DeclNode> Getparams()
         {
-            insidevars.Add(var);
+            return this.parametrs;
         }
         public Function()
         {
             parametrs = new List<DeclNode>();
-            insidevars = new List<Variable>();
-            nodes = null;
+            nodes = new List<FlowGraphNode>();
         }
     }
    
