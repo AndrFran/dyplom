@@ -75,8 +75,12 @@ namespace WpfApplication2
         {
             this.id = id;
             this.type = NodeType.E_DECL;
+            this.ArrayLevel = 0;
+            this.PointerLevel = 0;
         }
         NodeType type { get; set; }
+        public int ArrayLevel { get; set; }
+        public int PointerLevel { get; set; }
         public bool isArray { get; set; }
         public bool isPointer { get; set; }
         public bool isInited { get; set; }
@@ -101,11 +105,23 @@ namespace WpfApplication2
             string inited="Declaration";
             if(this.isArray)
             {
-                array = "[]";
+                StringBuilder str = new StringBuilder();
+                for (int i = 0; i < this.ArrayLevel; i++)
+                {
+                    str.Append("[]");
+                   
+                }
+                array = str.ToString();
             }
             if(this.isPointer)
             {
-                pointer = "*";
+                StringBuilder str = new StringBuilder();
+                for (int i = 0; i < this.PointerLevel; i++)
+                {
+                    str.Append("*");
+
+                }
+                pointer = str.ToString();
             }
             if(this.isInited)
             {
@@ -220,6 +236,40 @@ namespace WpfApplication2
             return "While "+this.condition.ToString();
         }
     }
+    public class ForNode : FlowGraphNode
+    {
+        int id;
+        NodeType type { get; set; }
+        public ForNode(int id)
+        {
+            this.type = NodeType.E_FOR;
+            this.id = id;
+        }
+        public FlowGraphNode condition { get; set; }
+
+        public List<FlowGraphNode> loop { get; set; }
+        public FlowGraphNode init { get; set; }
+        public FlowGraphNode next { get; set; }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+
+        override public string ToString()
+        {
+            return "For(" +this.init.ToString()+";\n"+ this.condition.ToString()+";\n"+this.next.ToString()+")";
+        }
+    }
+
     public class ID : FlowGraphNode
     {
         int id;
@@ -297,7 +347,7 @@ namespace WpfApplication2
             this.type = type;
         }
 
-        public string Name { get; set; }
+        public FlowGraphNode Name { get; set; }
         public FlowGraphNode index { get; set; }
 
         override public string ToString()

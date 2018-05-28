@@ -191,6 +191,28 @@ namespace WpfApplication2
 
                             break;
                         }
+                    case NodeType.E_FOR:
+                        {
+                            int whiley = 0;
+                            ForNode whilenode = (ForNode)node;
+                            grids.Add(getNextDiamond(x, y, node));
+                            System.Windows.UIElement el = getNextDiamond(x, y, node);
+                            el.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+                            System.Windows.Size size = el.DesiredSize;
+
+                            y += (int)size.Height + 20;
+                            whiley = y - ((int)size.Height + 20) / 2;
+                            shapes.AddRange(getNextLine(x, y));
+                            y += 20;
+                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y));
+                            shapes.Add(new Line() { X1 = x, X2 = x - 150, Y1 = y, Y2 = y, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x - 150, X2 = x - 150, Y1 = y, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.AddRange(getNextLine(x, y));
+                            y += 20;
+
+                            break;
+                        }
                     case NodeType.E_IF:
                         {
                             IfNode ifnode = (IfNode)node;
@@ -229,9 +251,29 @@ namespace WpfApplication2
 
                                 y = tmp;
                             }
-                            shapes.Add(new Line() {X1 = x1, X2 =x, Y1 = y1, Y2 =y , Stroke= Brushes.LightBlue});
-                            shapes.Add(new Line() { X1 = x2, X2 = x, Y1 = y2, Y2 = y , Stroke = Brushes.LightBlue });
-                            
+                            if (ifnode.left.Count>0)
+                            {
+                                if (NodeType.E_RETURN != ifnode.left.Last().getNodeType())
+                                {
+
+                                    shapes.Add(new Line() { X1 = x1, X2 = x, Y1 = y1, Y2 = y, Stroke = Brushes.LightBlue });
+                                }
+                            }
+                            else
+                            {
+                                shapes.Add(new Line() { X1 = x1, X2 = x, Y1 = y1, Y2 = y, Stroke = Brushes.LightBlue });
+                            }
+                            if (ifnode.right.Count>0)
+                            {
+                                if (NodeType.E_RETURN != ifnode.right.Last().getNodeType())
+                                {
+                                    shapes.Add(new Line() { X1 = x2, X2 = x, Y1 = y2, Y2 = y, Stroke = Brushes.LightBlue });
+                                }
+                            }
+                            else
+                            {
+                                shapes.Add(new Line() { X1 = x2, X2 = x, Y1 = y2, Y2 = y, Stroke = Brushes.LightBlue });
+                            }
                             break;
                         }
                     default:

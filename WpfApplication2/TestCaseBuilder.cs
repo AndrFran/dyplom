@@ -62,17 +62,29 @@ namespace WpfApplication2
                     Variable v = new Variable();
                     v.name = node.DeclName;
                     v.type = node.DeclType;
-                    if(true == node.isArray)
+                    if(true == node.isPointer)
                     {
-                        v.ispointer = "*";
+                        StringBuilder str = new StringBuilder();
+                        for (int i = 0; i < node.PointerLevel; i++)
+                        {
+                            str.Append("*");
+
+                        }
+                        v.ispointer = str.ToString();
                     }
                     else
                     {
                         v.ispointer = "";
                     }
-                    if(true == node.isArray)
+                    if (true == node.isArray)
                     {
-                        v.isarray = "[]";
+                        StringBuilder str = new StringBuilder();
+                        for (int i = 0; i < node.ArrayLevel; i++)
+                        {
+                            str.Append("[]");
+
+                        }
+                        v.isarray = str.ToString();
                     }
                     else
                     {

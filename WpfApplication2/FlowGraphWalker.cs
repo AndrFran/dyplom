@@ -21,6 +21,45 @@ namespace WpfApplication2
 
                 switch (node.getNodeType())
                 {
+                    case NodeType.E_FOR:
+                        {
+                            ForNode whilenode = (ForNode)node;
+                            if (Pathes.Count == 0)
+                            {
+                                Pathes.Add(new List<FlowGraphNode>() { whilenode });
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Pathes.Count; i++)
+                                {
+                                    Pathes[i].Add(whilenode);
+                                }
+                            }
+                            List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
+                            foreach (List<FlowGraphNode> ls in Pathes)
+                            {
+                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
+                                tmp.AddRange(ls);
+                                dublicate.Add(tmp);
+                            }
+                            if (whilenode.loop != null)
+                            {
+                                List<List<FlowGraphNode>> recursive = CalculateAllPathes(whilenode.loop);
+
+                                foreach (List<FlowGraphNode> ls in recursive)
+                                {
+                                    for (int j = 0; j < Pathes.Count; j++)
+                                    {
+                                        Pathes[j].AddRange(ls);
+                                    }
+                                }
+                            }
+                            foreach (List<FlowGraphNode> ls in dublicate)
+                            {
+                                Pathes.Add(ls);
+                            }
+                            break;
+                        }
                     case NodeType.E_WHILE:
                         {
                             WhileNode whilenode = (WhileNode)node;
