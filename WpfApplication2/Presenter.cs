@@ -140,14 +140,16 @@ namespace WpfApplication2
         }
         public TestCases generateCases(List<string> funcnames)
         {
+            List<TestCase> ls = new List<TestCase>();
             TestCases cases = new TestCases();
             tree.ParseFunctions();
             List<Function> funcs = tree.GetFunctionByNames(funcnames);
             TestCaseBuilder builder = new TestCaseBuilder();
             foreach(Function f in funcs)
             {
-                builder.BuildTestCases(f);
+                ls.AddRange(builder.BuildTestCases(f));
             }
+            cases.testcases = ls.AsEnumerable();
             return cases;
         }
         public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y)

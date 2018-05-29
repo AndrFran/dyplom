@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Nustache.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -78,7 +79,10 @@ namespace WpfApplication2
                     
                 }
             }
-            preseter.generateCases(names);
+
+           TestCases cases=  preseter.generateCases(names);
+            var html = Render.StringToString(Properties.Resources.template, cases);
+            System.IO.File.WriteAllText(output.Text.ToString(), html);
         }
     }
     }

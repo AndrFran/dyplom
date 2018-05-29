@@ -75,22 +75,8 @@ namespace WpfApplication2
             Dictionary<string, object> type = (Dictionary<string, object>)((Dictionary<string, object>)(this.functions[id]["decl"]))["type"];
             //func.returntype = 
             Dictionary<string, object> ls = ((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"]);
-            ArrayList returntype;
-            if (ls.ContainsKey("names"))
-            {
-                returntype = (ArrayList)ls["names"];
-            }
-            else
-            {
-                ls = ((Dictionary<string, object>)((Dictionary<string, object>)ls["type"]));
-                returntype = (ArrayList)ls["names"];
-            }
-            StringBuilder str = new StringBuilder();
-            foreach(string s in returntype)
-            {
-                str.Append(s+" ");
-            }
-            func.returntype = str.ToString();
+           
+            func.returntype = (DeclNode)ParseDeclaration(ls);
             ArrayList functionflow = (ArrayList)((Dictionary<string, object>)(this.functions[id]["body"]))["block_items"];
             foreach (Dictionary<string, object> item in functionflow)
             {
@@ -191,27 +177,41 @@ namespace WpfApplication2
         {
             DeclNode node = new DeclNode(Id++);
             Dictionary<string, object> type = null;
+            if(item.ContainsKey("name"))
             node.DeclName = item["name"].ToString();
-            if(null == item["init"])
+            if (item.ContainsKey("init"))
             {
-                node.isInited = false;
-            }
-            else
-            {
-                node.isInited = true;
-            }
-            do
-            {
-                if (null == type)
+                if (null == item["init"])
                 {
-                    type = (Dictionary<string, object>)item["type"];
+                    node.isInited = false;
                 }
                 else
                 {
-                    type = (Dictionary<string, object>)type["type"];
+                    node.isInited = true;
                 }
-                string var = type["_nodetype"].ToString();
-                if("ArrayDecl" == var)
+            }
+            do
+            {
+                string var;
+                if (item.ContainsKey("type"))
+                {
+                    if (null == type)
+                    {
+                        type = (Dictionary<string, object>)item["type"];
+                    }
+                    else
+                    {
+                        type = (Dictionary<string, object>)type["type"];
+                    }
+                    var = type["_nodetype"].ToString();
+
+                }
+                else
+                {
+                    type = item;
+                    var =item["_nodetype"].ToString();
+                }
+                    if ("ArrayDecl" == var)
                 {
                     node.ArrayLevel++;
                     node.isArray = true;
@@ -233,7 +233,7 @@ namespace WpfApplication2
                     for (int i = 0; i < type1.Count; i++)
                     {
                         str.Append(type1[i].ToString()+" ");
-
+                 
                     }
                     node.DeclType = str.ToString();
                 }
@@ -481,7 +481,7 @@ namespace WpfApplication2
     public class Function
     {
         List<DeclNode> parametrs;
-        public string returntype { get; set; }
+        public DeclNode returntype { get; set; }
         public List<FlowGraphNode> nodes { get; set; }
         public string name { get; set; }
         public void AddParam(DeclNode var)

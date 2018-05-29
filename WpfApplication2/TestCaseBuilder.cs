@@ -15,6 +15,15 @@ namespace WpfApplication2
         E_POINTER_CHECK,
         E_GLOBAL_CHECK
     }
+    public class CheckReturn
+    {
+        public Variable ToCheck { get; set; }
+        public bool intcheck;
+        public bool pointercheck;
+        public bool boolchecl;
+        public bool charcheck;
+        public bool memcheck;
+    }
     public class Variable
     {
         public string type { get; set; }
@@ -22,23 +31,26 @@ namespace WpfApplication2
         public string value { get; set; }
         public string isarray{ get; set; }
         public string ispointer { get; set; }
-}
+        public string comma { get; set; }
+    }
     public class TestCase
     {
 
         public string function_name { get; set; }
-        public TestCaseType type { get; set; }
+        public Variable function_type { get; set; }
         public int id { get; set; }
         public IEnumerable<Variable> CheckVars { get; set; }
         public IEnumerable<Variable> Arguments { get; set; }
-        public IEnumerable<Function> FuncCalls { get; set; }
+        public IEnumerable<FuncCallNode> FuncCalls { get; set; }
         public IEnumerable<FlowGraphNode> path { get; set; }
+
+        public CheckReturn returnchecker { get; set; }
     }
 
     public class TestCases
     {
         public string filename { get; set; }
-        IEnumerable<TestCase> testcases { get; set; }
+        public IEnumerable<TestCase> testcases { get; set; }
 
     }
     public class TestCaseBuilder
@@ -46,6 +58,52 @@ namespace WpfApplication2
         static int id;
         public TestCaseBuilder()
         {
+            id = 0;
+        }
+        Variable DeclNodeToVar(DeclNode node,Function f)
+        {
+            Variable v = new Variable();
+            v.name = node.DeclName;
+            v.type = node.DeclType;
+            if (node == f.Getparams().Last())
+            {
+                v.comma = "";
+            }
+            else
+            {
+                v.comma = ",";
+            }
+            if (true == node.isPointer)
+            {
+                StringBuilder str = new StringBuilder();
+                for (int i = 0; i < node.PointerLevel; i++)
+                {
+                    str.Append("*");
+
+                }
+                v.ispointer = str.ToString();
+            }
+            else
+            {
+                v.ispointer = "";
+            }
+            if (true == node.isArray)
+            {
+                StringBuilder str = new StringBuilder();
+                for (int i = 0; i < node.ArrayLevel; i++)
+                {
+                    str.Append("[]");
+
+                }
+                v.isarray = str.ToString();
+            }
+            else
+            {
+                v.isarray = "";
+            }
+            v.value = "{0}";
+            //calc var value
+            return v;
 
         }
         public List<TestCase> BuildTestCases(Function f)
@@ -56,50 +114,76 @@ namespace WpfApplication2
             foreach (List<FlowGraphNode> path in pathes)
             {
                 TestCase NewCase = new TestCase();
+                NewCase.id = TestCaseBuilder.id++;
                 List<Variable> args = new List<Variable>();
                 foreach(DeclNode node in f.Getparams())
                 {
-                    Variable v = new Variable();
-                    v.name = node.DeclName;
-                    v.type = node.DeclType;
-                    if(true == node.isPointer)
-                    {
-                        StringBuilder str = new StringBuilder();
-                        for (int i = 0; i < node.PointerLevel; i++)
-                        {
-                            str.Append("*");
-
-                        }
-                        v.ispointer = str.ToString();
-                    }
-                    else
-                    {
-                        v.ispointer = "";
-                    }
-                    if (true == node.isArray)
-                    {
-                        StringBuilder str = new StringBuilder();
-                        for (int i = 0; i < node.ArrayLevel; i++)
-                        {
-                            str.Append("[]");
-
-                        }
-                        v.isarray = str.ToString();
-                    }
-                    else
-                    {
-                        v.isarray = "";
-                    }
-                    v.value = "{0}";
-                    //calc var value
-                    args.Add(v);
+                    args.Add(DeclNodeToVar(node, f));
                 }
+
                 NewCase.Arguments = args.AsEnumerable();
                 NewCase.function_name = f.name;
-                if(f.returntype != null)
+                NewCase.function_type = DeclNodeToVar(f.returntype, f);
+
+                foreach (FlowGraphNode testnode in path)
                 {
-                    NewCase.type = TestCaseType.E_RETURN_CHECK_INT;
+                    List<DeclNode> insideVars = new List<DeclNode>();
+                    switch (testnode.getNodeType())
+                    {
+                        case NodeType.E_DECL:
+                            {
+                                DeclNode insidevar = (DeclNode)testnode;
+                                insideVars.Add(insidevar);
+                                break;
+                            }
+                        case NodeType.E_IF:
+                            {
+                                break;
+                            }
+                        case NodeType.E_WHILE:
+                            {
+                                break;
+                            }
+                        case NodeType.E_FOR:
+                            {
+                                break;
+                            }
+                        case NodeType.E_FUNC_CALL:
+                            {
+                                break;
+                            }
+                        case NodeType.E_ASSIGMENT:
+                            {
+                                break;
+                            }
+                        case NodeType.E_RETURN:
+                            {
+                                ReturnNode ret = (ReturnNode)testnode;
+                                NewCase.returnchecker = new CheckReturn() { ToCheck= new Variable { type = NewCase.function_type.type,value=ret.expr.ToString()} };
+                                if(NewCase.function_type.type.Contains("int"))
+                                {
+                                    NewCase.returnchecker.ToCheck.type = "int";
+                                    if(NewCase.function_type.ispointer == "" &&
+                                        NewCase.function_type.isarray == "")
+                                        {
+                                        NewCase.returnchecker.intcheck = true;
+                                    }
+                                }
+                                else
+                                {
+                                    NewCase.returnchecker.memcheck = true;
+                                }
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+                    }
+
                 }
+                testcases.Add(NewCase);
+
             }
                     return testcases;
         }

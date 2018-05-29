@@ -32,15 +32,21 @@ namespace WpfApplication2
                             {
                                 for (int i = 0; i < Pathes.Count; i++)
                                 {
-                                    Pathes[i].Add(whilenode);
-                                }
+                                    if (NodeType.E_RETURN != Pathes[i].Last().getNodeType())
+                                    {
+                                        Pathes[i].Add(whilenode);
+                                    }
+                                    }
                             }
                             List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
                             foreach (List<FlowGraphNode> ls in Pathes)
                             {
-                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
-                                tmp.AddRange(ls);
-                                dublicate.Add(tmp);
+                                if (NodeType.E_RETURN != ls.Last().getNodeType())
+                                {
+                                    List<FlowGraphNode> tmp = new List<FlowGraphNode>();
+                                    tmp.AddRange(ls);
+                                    dublicate.Add(tmp);
+                                }
                             }
                             if (whilenode.loop != null)
                             {
@@ -50,12 +56,16 @@ namespace WpfApplication2
                                 {
                                     for (int j = 0; j < Pathes.Count; j++)
                                     {
-                                        Pathes[j].AddRange(ls);
+                                        if (NodeType.E_RETURN != Pathes[j].Last().getNodeType())
+                                        {
+                                            Pathes[j].AddRange(ls);
+                                        }
                                     }
                                 }
                             }
                             foreach (List<FlowGraphNode> ls in dublicate)
                             {
+
                                 Pathes.Add(ls);
                             }
                             break;
@@ -71,15 +81,21 @@ namespace WpfApplication2
                             {
                                 for (int i = 0; i < Pathes.Count; i++)
                                 {
-                                    Pathes[i].Add(whilenode);
+                                    if (NodeType.E_RETURN != Pathes[i].Last().getNodeType())
+                                    {
+                                        Pathes[i].Add(whilenode);
+                                    }
                                 }
                             }
                             List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
                             foreach (List<FlowGraphNode> ls in Pathes)
                             {
-                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
-                                tmp.AddRange(ls);
-                                dublicate.Add(tmp);
+                                if (NodeType.E_RETURN != ls.Last().getNodeType())
+                                {
+                                    List<FlowGraphNode> tmp = new List<FlowGraphNode>();
+                                    tmp.AddRange(ls);
+                                    dublicate.Add(tmp);
+                                }
                             }
                             if (whilenode.loop != null)
                             {
@@ -89,7 +105,10 @@ namespace WpfApplication2
                                 {
                                     for (int j = 0; j < Pathes.Count; j++)
                                     {
-                                        Pathes[j].AddRange(ls);
+                                        if (NodeType.E_RETURN != Pathes[j].Last().getNodeType())
+                                        {
+                                            Pathes[j].AddRange(ls);
+                                        }
                                     }
                                 }
                             }
@@ -110,15 +129,21 @@ namespace WpfApplication2
                                 {
                                     for (int i = 0; i < Pathes.Count; i++)
                                     {
+                                    if (NodeType.E_RETURN != Pathes[i].Last().getNodeType())
+                                    {
                                         Pathes[i].Add(node);
+                                    }
                                     }
                                 }
                             List<List<FlowGraphNode>> dublicate = new List<List<FlowGraphNode>>();
                             foreach (List<FlowGraphNode> ls in Pathes)
                             {
-                                List<FlowGraphNode> tmp = new List<FlowGraphNode>();
-                                tmp.AddRange(ls);
-                                dublicate.Add(tmp);
+                                if (NodeType.E_RETURN != ls.Last().getNodeType())
+                                {
+                                    List<FlowGraphNode> tmp = new List<FlowGraphNode>();
+                                    tmp.AddRange(ls);
+                                    dublicate.Add(tmp);
+                                }
                             }
                             if (ifnode.left != null)
                             {
@@ -128,7 +153,10 @@ namespace WpfApplication2
                                 {
                                     for(int j=0;j<Pathes.Count;j++)
                                     {
-                                        Pathes[j].AddRange(ls);
+                                        if (NodeType.E_RETURN != Pathes[j].Last().getNodeType())
+                                        {
+                                            Pathes[j].AddRange(ls);
+                                        }
                                     }
                                 }
                             }
@@ -140,7 +168,10 @@ namespace WpfApplication2
                                 {
                                     for (int j = 0; j < dublicate.Count; j++)
                                     {
-                                        dublicate[j].AddRange(ls);
+                                        if (NodeType.E_RETURN != dublicate[j].Last().getNodeType())
+                                        {
+                                            dublicate[j].AddRange(ls);
+                                        }
                                     }
                                 }
                             }
@@ -150,6 +181,7 @@ namespace WpfApplication2
                             }
                             break;
                         }
+
                     default:
                         {
                             if(Pathes.Count == 0)
@@ -160,7 +192,10 @@ namespace WpfApplication2
                             {
                                 for(int i=0;i<Pathes.Count;i++)
                                 {
-                                    Pathes[i].Add(node);
+                                    if (NodeType.E_RETURN != Pathes[i].Last().getNodeType())
+                                    {
+                                        Pathes[i].Add(node);
+                                    }
                                 }
                             }
                             break;

@@ -51,7 +51,18 @@ static void test_case_{{function_name}}_{{id}}()
 	{{/Arguments}}
 	TestID = {{id}};
 	//call function
-	{{function_name}}({{#Arguments}}{{name}}{{/Arguments}});
+
+	{{#returnchecker}}
+	{{function_type}} ret = {{function_name}}({{#Arguments}}{{name}}{{comma}}{{/Arguments}});
+	{{/returnchecker}}
+	{{^returnchecker}}
+	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
+	{{/returnchecker}}
+
+	{{#returnchecker}}
+	{{#memcheck}}
+	{{/memcheck}}
+	{{/returnchecker}}
 }
 {{/testcases}}
 
