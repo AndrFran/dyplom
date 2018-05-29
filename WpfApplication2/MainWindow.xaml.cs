@@ -24,42 +24,20 @@ namespace WpfApplication2
     /// </summary>
     public partial class MainWindow : Window
     {
+        int index;
+        List<TestCase> cases;
         public MainWindow()
         {
             InitializeComponent();
         }
- 
+        public MainWindow(List<TestCase> cases)
+        {
+            InitializeComponent();
+            this.cases = cases;
+        }
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            var person = new Person
-            {
-                PrintLastName = false,
-                FirstName = "Dima",
-                LastName = "Pupkin",
-                Age = 40,
-                ChildNames = new List<Name>
-                                                  {
-                                                      new Name
-                                                          {
-                                                              Value = "Jerry"
-                                                          }
-                                                  },
-                ParentNames = new List<Name>
-                                                  {
-                                                      new Name
-                                                          {
-                                                              Value = "Sara"
-                                                          },
-                                                       new Name
-                                                          {
-                                                              Value = "Tom"
-                                                          },
-                                                  }
-
-            };
-            var html = Render.StringToString(Properties.Resources.template, person);
-            Console.WriteLine(html);
-            Console.ReadLine();
+           
         }
 
         private void button_Click_1(object sender, RoutedEventArgs e)
@@ -67,17 +45,18 @@ namespace WpfApplication2
             
 
         }
-        private void OpenJson(object sender, RoutedEventArgs e)
+        private void Next(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
+            if (index < cases.Count)
             {
-                
-                string json =System.IO.File.ReadAllText(openFileDialog.FileName);
+                TestCase NewCase = cases[index++];
+                var html = Render.StringToString(Properties.Resources.testcase, NewCase);
+                richTextBox.Document.Blocks.Clear();
+                richTextBox.AppendText(html);
+                DrawingField.Children.Clear();
                 Presenter presenter = Presenter.Instance;
-                int y = 0 ;
-                presenter.ParseFuncNames(json);
-                List<UIElement> nodes = presenter.BuildFlowControlGraph(ref y);
+                int y = 0;
+                List<UIElement> nodes = presenter.BuildFlowControlGraph(ref y,NewCase.function_nodes,NewCase.path.ToList());
                 DrawingField.Height = y;
                 foreach (var elem in nodes)
                 {
@@ -90,9 +69,8 @@ namespace WpfApplication2
                     Canvas.SetTop(elem, elem.ypos);
                 }
             }
-                
+}
 
-        }
 
         private void richTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {

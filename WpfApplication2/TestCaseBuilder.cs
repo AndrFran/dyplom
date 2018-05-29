@@ -18,11 +18,11 @@ namespace WpfApplication2
     public class CheckReturn
     {
         public Variable ToCheck { get; set; }
-        public bool intcheck;
-        public bool pointercheck;
-        public bool boolchecl;
-        public bool charcheck;
-        public bool memcheck;
+        public bool intcheck { get; set; }
+        public bool pointercheck { get; set; }
+        public bool boolchecl { get; set; }
+        public bool charcheck { get; set; }
+        public bool memcheck { get; set; }
     }
     public class Variable
     {
@@ -43,7 +43,7 @@ namespace WpfApplication2
         public IEnumerable<Variable> Arguments { get; set; }
         public IEnumerable<FuncCallNode> FuncCalls { get; set; }
         public IEnumerable<FlowGraphNode> path { get; set; }
-
+        public List<FlowGraphNode> function_nodes { get; set; }
         public CheckReturn returnchecker { get; set; }
     }
 
@@ -59,6 +59,23 @@ namespace WpfApplication2
         public TestCaseBuilder()
         {
             id = 0;
+        }
+        string GetTypeOfTypeDef(String type,List<FlowGraphNode> GlobalScope)
+        {
+            string result = null;
+            foreach(FlowGraphNode glob in GlobalScope)
+            {
+                if(glob.getNodeType() == NodeType.E_TYPEDEF)
+                {
+                    TypeDef node = (TypeDef)glob;
+                    if (node.name == type)
+                    {
+                        TypeDecl decl = (TypeDecl)node.TypeDecl;
+                        result = decl.Type.getNodeType().ToString();
+                    }
+                }
+            }
+            return result;
         }
         Variable DeclNodeToVar(DeclNode node,Function f)
         {
@@ -106,7 +123,7 @@ namespace WpfApplication2
             return v;
 
         }
-        public List<TestCase> BuildTestCases(Function f)
+        public List<TestCase> BuildTestCases(Function f,List<FlowGraphNode> GlobalScope)
         {
             List<TestCase> testcases = new List<TestCase>();
             FlowGraphWalker graphwalker = new FlowGraphWalker();
@@ -124,7 +141,8 @@ namespace WpfApplication2
                 NewCase.Arguments = args.AsEnumerable();
                 NewCase.function_name = f.name;
                 NewCase.function_type = DeclNodeToVar(f.returntype, f);
-
+                NewCase.function_nodes = f.nodes;
+                NewCase.path = path;
                 foreach (FlowGraphNode testnode in path)
                 {
                     List<DeclNode> insideVars = new List<DeclNode>();
@@ -160,18 +178,26 @@ namespace WpfApplication2
                             {
                                 ReturnNode ret = (ReturnNode)testnode;
                                 NewCase.returnchecker = new CheckReturn() { ToCheck= new Variable { type = NewCase.function_type.type,value=ret.expr.ToString()} };
-                                if(NewCase.function_type.type.Contains("int"))
+                                if (NewCase.function_type.ispointer != "" ||
+                                     NewCase.function_type.isarray != "")
+                                {
+                                    NewCase.returnchecker.memcheck = true;
+                                }
+                                
+                                    if (NewCase.function_type.type.Contains("int"))
                                 {
                                     NewCase.returnchecker.ToCheck.type = "int";
-                                    if(NewCase.function_type.ispointer == "" &&
-                                        NewCase.function_type.isarray == "")
-                                        {
-                                        NewCase.returnchecker.intcheck = true;
-                                    }
+                                    NewCase.returnchecker.intcheck = true;
+
                                 }
                                 else
                                 {
-                                    NewCase.returnchecker.memcheck = true;
+                                    string type = GetTypeOfTypeDef(f.returntype.DeclType,GlobalScope);
+                                        if(type == "E_ENUM")
+                                        {
+                                            NewCase.returnchecker.ToCheck.type = f.returntype.DeclType;
+                                            NewCase.returnchecker.intcheck = true;
+                                        }
                                 }
                                 break;
                             }

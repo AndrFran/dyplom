@@ -15,6 +15,7 @@ namespace WpfApplication2
         List<Dictionary<string, object>> globals;
         List<Dictionary<string,object>> functions;
         List<Function> ParsedFunctions;
+        public List<FlowGraphNode> GlobalScope { get; set; }
         List<FlowGraphNode> graph = null;
         public SyntaxTree()
         {
@@ -22,6 +23,7 @@ namespace WpfApplication2
             globals = new List<Dictionary<string, object>>();
             functions = new List<Dictionary<string, object>>();
             ParsedFunctions = new List<Function>();
+            GlobalScope = new List<FlowGraphNode>();
         }
 
         public List<string> Create(Dictionary<string, object> dic)
@@ -39,6 +41,10 @@ namespace WpfApplication2
                 {
                     globals.Add(value);
                 }
+            }
+            foreach(Dictionary<string,object> glob in globals)
+            {
+                GlobalScope.Add(ParseNode(glob));
             }
             return names;
         }
@@ -72,11 +78,9 @@ namespace WpfApplication2
             func.name = ((Dictionary<string, object>)(this.functions[id]["decl"]))["name"].ToString();
 
 
-            Dictionary<string, object> type = (Dictionary<string, object>)((Dictionary<string, object>)(this.functions[id]["decl"]))["type"];
-            //func.returntype = 
-            Dictionary<string, object> ls = ((Dictionary<string, object>)((Dictionary<string, object>)type["type"])["type"]);
+            Dictionary<string, object> type = ((Dictionary<string, object>)(this.functions[id]["decl"]));
            
-            func.returntype = (DeclNode)ParseDeclaration(ls);
+            func.returntype = (DeclNode)ParseDeclaration(type);
             ArrayList functionflow = (ArrayList)((Dictionary<string, object>)(this.functions[id]["body"]))["block_items"];
             foreach (Dictionary<string, object> item in functionflow)
             {
@@ -232,8 +236,14 @@ namespace WpfApplication2
                     ArrayList type1 = ((ArrayList)(type["names"]));
                     for (int i = 0; i < type1.Count; i++)
                     {
-                        str.Append(type1[i].ToString()+" ");
-                 
+                        if (i == type1.Count - 1)
+                        {
+                            str.Append(type1[i].ToString());
+                        }
+                        else
+                        {
+                            str.Append(type1[i].ToString() + " ");
+                        }
                     }
                     node.DeclType = str.ToString();
                 }

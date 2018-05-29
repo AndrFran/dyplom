@@ -61,26 +61,78 @@ namespace WpfApplication2.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hello {{FirstName}}
-        ///Your age is {{Age}}!
-        ///{{#PrintLastName}}
-        ///Well, your last name is {{LastName}}
-        ///{{/PrintLastName}}
+        ///   Looks up a localized string similar to #include &lt;stdarg.h&gt;
+        ///#include &lt;stddef.h&gt;
+        ///#include &lt;setjmp.h&gt;
+        ///#include &lt;string.h&gt;
+        ///#include &lt;cmocka.h&gt;
         ///
-        ///And your child(s) are:
-        ///{{#ChildNames}}
-        ///  {{Value}}
-        ///{{/ChildNames}}
+        ///#include &quot;{{filename.h}}&quot;
         ///
+        ///static int TestID;
         ///
-        ///And your parrent(s) are:
-        ///{{#ParentNames}}
-        ///  {{Value}}
-        ///{{/ParentNames}}.
+        ///static void setup()
+        ///{
+        ///	switch(TestID)
+        ///	{
+        ///	{{#testcases}}
+        ///		case : {{id}}
+        ///		{
+        ///			
+        ///			break;
+        ///		}
+        ///	{{/testcases}}
+        ///	}
+        ///}
+        ///static void teardown()
+        ///{
+        ///	switch(TestID)
+        ///	{
+        ///	{{#testcases}}
+        ///		case : {{id}}
+        ///		{
+        ///			
+        ///			break;
+        ///		}
+        ///	{{/testcases}}
+        ///	}
+        ///}
+        ////*Scenario: Some determinable business situation
+        ///     Given some precondition
+        ///       And so [rest of string was truncated]&quot;;.
         /// </summary>
         public static string template {
             get {
                 return ResourceManager.GetString("template", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to static void test_case_{{function_name}}_{{id}}()
+        ///{
+        ///	//declare intput arguments
+        ///	{{#Arguments}}
+        ///	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
+        ///	{{/Arguments}}
+        ///	TestID = {{id}};
+        ///	//call function
+        ///
+        ///	{{#returnchecker}}
+        ///	{{function_type}} ret = {{function_name}}({{#Arguments}}{{name}}{{comma}}{{/Arguments}});
+        ///	{{/returnchecker}}
+        ///	{{^returnchecker}}
+        ///	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
+        ///	{{/returnchecker}}
+        ///
+        ///	{{#returnchecker}}
+        ///	{{#memcheck}}
+        ///
+        ///	{{/memcheck}}
+        ///	{{#i [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string testcase {
+            get {
+                return ResourceManager.GetString("testcase", resourceCulture);
             }
         }
     }

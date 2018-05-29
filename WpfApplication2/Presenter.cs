@@ -38,11 +38,16 @@ namespace WpfApplication2
                 return instance;
             }
         }
-        MyGrid getNextRect(int x,int y,FlowGraphNode node)
+        MyGrid getNextRect(int x,int y,FlowGraphNode node, List<FlowGraphNode> path)
         {
             var grid = new MyGrid();
-            
-            Rectangle rect = new Rectangle { Width = Double.NaN, Height = Double.NaN, Fill = Brushes.Azure };
+            Rectangle rect = null;
+            if (path.Contains(node))
+            { rect = new Rectangle { Width = Double.NaN, Height = Double.NaN, Fill = Brushes.Green }; }
+            else
+            {
+                rect = new Rectangle { Width = Double.NaN, Height = Double.NaN, Fill = Brushes.Azure };
+            }
             rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
             rect.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
             grid.Children.Add(rect);
@@ -54,12 +59,17 @@ namespace WpfApplication2
             grid.ypos = y;
             return grid;
         }
-        MyGrid getNextDiamond(int x, int y, FlowGraphNode node)
+        MyGrid getNextDiamond(int x, int y, FlowGraphNode node, List<FlowGraphNode> path)
         {
             var grid = new MyGrid();
-
-            Rectangle rect = new Rectangle { Width = 50, Height = 50, Fill = Brushes.Azure };
-            rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            Rectangle rect = null;
+            if (path.Contains(node))
+            {  rect = new Rectangle { Width = 50, Height = 50, Fill = Brushes.Green }; }
+            else
+            {
+                 rect = new Rectangle { Width = 50, Height = 50, Fill = Brushes.Azure };
+            }
+                rect.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
             rect.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
             RotateTransform rotation = new RotateTransform();
 
@@ -147,23 +157,23 @@ namespace WpfApplication2
             TestCaseBuilder builder = new TestCaseBuilder();
             foreach(Function f in funcs)
             {
-                ls.AddRange(builder.BuildTestCases(f));
+                ls.AddRange(builder.BuildTestCases(f ,tree.GlobalScope));
             }
             cases.testcases = ls.AsEnumerable();
             return cases;
         }
-        public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y)
+        public List<System.Windows.UIElement> BuildFlowControlGraph(ref int y, List<FlowGraphNode> Nodes, List<FlowGraphNode> path)
         {
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             grids = new List<MyGrid>();
             //GetFunctionByNames
-            List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(1);
-            TestCaseBuilder builder = new TestCaseBuilder();
+            //List<FlowGraphNode> Nodes=tree.CreateFlowControlGraph(1);
+            //TestCaseBuilder builder = new TestCaseBuilder();
             //builder.BuildTestCases(Nodes);
-            shapes = generateShapes(Nodes, 300, ref y );
+            shapes = generateShapes(Nodes, 400, ref y ,path);
             return shapes;
         }
-        public List<System.Windows.UIElement> generateShapes(List<FlowGraphNode> nodes, int x,ref int y)
+        public List<System.Windows.UIElement> generateShapes(List<FlowGraphNode> nodes, int x,ref int y, List<FlowGraphNode> path)
         {
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             foreach (FlowGraphNode node in nodes)
@@ -175,8 +185,8 @@ namespace WpfApplication2
                         {
                             int whiley = 0;
                             WhileNode whilenode = (WhileNode)node;
-                            grids.Add(getNextDiamond(x, y, node));
-                            System.Windows.UIElement el = getNextDiamond(x, y, node);
+                            grids.Add(getNextDiamond(x, y, node,path));
+                            System.Windows.UIElement el = getNextDiamond(x, y, node,path);
                             el.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                             System.Windows.Size size = el.DesiredSize;
 
@@ -184,7 +194,7 @@ namespace WpfApplication2
                             whiley = y - ((int)size.Height + 20)/2;
                             shapes.AddRange(getNextLine(x, y));
                             y += 20;
-                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y));
+                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y,path));
                             shapes.Add(new Line() { X1 = x, X2 = x-150, Y1 = y, Y2 = y, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x-150, X2 = x - 150, Y1 = y, Y2 = whiley, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
@@ -197,8 +207,8 @@ namespace WpfApplication2
                         {
                             int whiley = 0;
                             ForNode whilenode = (ForNode)node;
-                            grids.Add(getNextDiamond(x, y, node));
-                            System.Windows.UIElement el = getNextDiamond(x, y, node);
+                            grids.Add(getNextDiamond(x, y, node,path));
+                            System.Windows.UIElement el = getNextDiamond(x, y, node,path);
                             el.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                             System.Windows.Size size = el.DesiredSize;
 
@@ -206,7 +216,7 @@ namespace WpfApplication2
                             whiley = y - ((int)size.Height + 20) / 2;
                             shapes.AddRange(getNextLine(x, y));
                             y += 20;
-                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y));
+                            shapes.AddRange(generateShapes(whilenode.loop, x, ref y,path));
                             shapes.Add(new Line() { X1 = x, X2 = x - 150, Y1 = y, Y2 = y, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x - 150, Y1 = y, Y2 = whiley, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
@@ -218,7 +228,7 @@ namespace WpfApplication2
                     case NodeType.E_IF:
                         {
                             IfNode ifnode = (IfNode)node;
-                            grids.Add(getNextDiamond(x, y, node));
+                            grids.Add(getNextDiamond(x, y, node,path));
                             int x1 = x;
                             int x2 = x;
                             y += 50;
@@ -238,13 +248,13 @@ namespace WpfApplication2
                             int tmp = y;
                             if (ifnode.left.Count > 0)
                             {
-                                shapes.AddRange(generateShapes(ifnode.left, x + 200, ref y));
+                                shapes.AddRange(generateShapes(ifnode.left, x + 200, ref y,path));
                                 y1 = y;
                                 y += 20;
                             }
                             if (ifnode.right.Count > 0)
                             {
-                                shapes.AddRange(generateShapes(ifnode.right, x - 200, ref tmp));
+                                shapes.AddRange(generateShapes(ifnode.right, x - 200, ref tmp,path));
                                 y2 = tmp;
                                 tmp += 20;
                             }
@@ -280,8 +290,8 @@ namespace WpfApplication2
                         }
                     default:
                         {
-                            grids.Add(getNextRect(x, y, node));
-                            System.Windows.UIElement el = getNextRect(x, y, node);
+                            grids.Add(getNextRect(x, y, node,path));
+                            System.Windows.UIElement el = getNextRect(x, y, node,path);
                             el.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
                             System.Windows.Size size = el.DesiredSize;
                             y += (int)size.Height;

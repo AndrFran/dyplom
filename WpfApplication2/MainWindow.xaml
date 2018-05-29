@@ -5,14 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApplication2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
-    <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="32,20,10,69">
+        Title="MainWindow" Height="600" Width="1300">
+    <Grid HorizontalAlignment="Left" Width="1290">
+        <Border Margin="558,39,34,59" BorderBrush="Black" Visibility="Visible" BorderThickness="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10" RenderTransformOrigin="0.667,0.515" BorderBrush="Black" BorderThickness="1" >
             <Canvas x:Name="DrawingField" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="15"/>
         </ScrollViewer>
-        <Button x:Name="button" Content=">>" HorizontalAlignment="Left" Margin="708,510,0,0" VerticalAlignment="Top" Width="74" Click="button_Click_1" RenderTransformOrigin="1.4,0.7"/>
-        <Button x:Name="button_Copy" Content="&lt;&lt;" HorizontalAlignment="Right" Margin="0,505,707,0" VerticalAlignment="Top" Width="75" Click="OpenJson"/>
-      
+        </Border>
+        <Button x:Name="button" Content=">>" HorizontalAlignment="Left" Margin="1206,515,0,0" VerticalAlignment="Top" Width="74" Click="Next" RenderTransformOrigin="1.4,0.7"/>
+        <Button x:Name="button_Copy" Content="&lt;&lt;" HorizontalAlignment="Right" Margin="0,515,1205,0" VerticalAlignment="Top" Width="75" Click="Next"/>
+        <RichTextBox x:Name="richTextBox" HorizontalAlignment="Left" Height="461" Margin="50,39,0,0" VerticalAlignment="Top" Width="467">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="RichTextBox"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
 
 
     </Grid>

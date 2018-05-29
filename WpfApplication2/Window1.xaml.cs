@@ -83,6 +83,9 @@ namespace WpfApplication2
            TestCases cases=  preseter.generateCases(names);
             var html = Render.StringToString(Properties.Resources.template, cases);
             System.IO.File.WriteAllText(output.Text.ToString(), html);
+            MainWindow w = new MainWindow(cases.testcases.ToList());
+            w.Show();
+
         }
     }
     }

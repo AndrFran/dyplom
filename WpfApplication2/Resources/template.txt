@@ -61,7 +61,11 @@ static void test_case_{{function_name}}_{{id}}()
 
 	{{#returnchecker}}
 	{{#memcheck}}
+
 	{{/memcheck}}
+	{{#intcheck}}
+	assert_int_equal(ret,{{#ToCheck}}{{Value}}{{/ToCheck}});
+	{{/intcheck}}
 	{{/returnchecker}}
 }
 {{/testcases}}
