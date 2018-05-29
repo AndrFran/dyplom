@@ -477,7 +477,14 @@ namespace WpfApplication2
 
         override public string ToString()
         {
-            return "return " + this.expr.ToString();
+            if (expr != null)
+            {
+                return "return " + this.expr.ToString();
+            }
+            else
+            {
+                return "return";
+            }
         }
         public int getId()
         {

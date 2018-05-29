@@ -177,6 +177,10 @@ namespace WpfApplication2
                         case NodeType.E_RETURN:
                             {
                                 ReturnNode ret = (ReturnNode)testnode;
+                                if(NewCase.function_type.type =="void")
+                                {
+                                    break;
+                                }
                                 NewCase.returnchecker = new CheckReturn() { ToCheck= new Variable { type = NewCase.function_type.type,value=ret.expr.ToString()} };
                                 if (NewCase.function_type.ispointer != "" ||
                                      NewCase.function_type.isarray != "")
