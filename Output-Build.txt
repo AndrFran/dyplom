@@ -1,0 +1,11 @@
+﻿1>------ Build started: Project: TestCaseGeneraator, Configuration: Debug Any CPU ------
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\JsonParser.cs(6,7,6,33): warning CS0105: The using directive for 'System.Collections.Generic' appeared previously in this namespace
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\MainWindow.xaml.cs(15,7,15,33): warning CS0105: The using directive for 'System.Collections.Generic' appeared previously in this namespace
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\Presenter.cs(19,13,19,18): warning CS0169: The field 'Presenter.depth' is never used
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\FlowGraphNode.cs(88,30,88,40): warning CS0169: The field 'DeclNode.InitValues' is never used
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\JsonParser.cs(6,7,6,33): warning CS0105: The using directive for 'System.Collections.Generic' appeared previously in this namespace
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\MainWindow.xaml.cs(15,7,15,33): warning CS0105: The using directive for 'System.Collections.Generic' appeared previously in this namespace
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\Presenter.cs(19,13,19,18): warning CS0169: The field 'Presenter.depth' is never used
+1>C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\FlowGraphNode.cs(88,30,88,40): warning CS0169: The field 'DeclNode.InitValues' is never used
+1>  TestCaseGeneraator -> C:\Users\corov\Desktop\Dyplom\WpfApplication2\WpfApplication2\bin\Debug\WpfApplication2.exe
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

@@ -1,0 +1,25 @@
+static void test_case_{{function_name}}_{{id}}()
+{
+	//declare intput arguments
+	{{#Arguments}}
+	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
+	{{/Arguments}}
+	TestID = {{id}};
+	//call function
+
+	{{#returnchecker}}
+	{{function_type}} ret = {{function_name}}({{#Arguments}}{{name}}{{comma}}{{/Arguments}});
+	{{/returnchecker}}
+	{{^returnchecker}}
+	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
+	{{/returnchecker}}
+
+	{{#returnchecker}}
+	{{#memcheck}}
+
+	{{/memcheck}}
+	{{#intcheck}}
+	assert_int_equal(ret,{{#ToCheck}}{{Value}}{{/ToCheck}});
+	{{/intcheck}}
+	{{/returnchecker}}
+}
