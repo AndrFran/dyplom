@@ -86,6 +86,11 @@ namespace WpfApplication2
             {
                 func.nodes.Add(ParseNode(item));
             }
+            if(NodeType.E_RETURN != func.nodes.Last().getNodeType())
+            {
+                ReturnNode node = new ReturnNode(Id++);
+                func.nodes.Add(node);
+            }
             Dictionary<string, object> tmp = (((Dictionary<string, object>)(((Dictionary<string, object>)(((Dictionary<string, object>)(this.functions[id]["decl"]))["type"]))["args"])));
             if (tmp != null)
             { 
@@ -174,15 +179,45 @@ namespace WpfApplication2
             {
                 node = ParseStructRef(item);
             }
+            if("Typename" == NodeType)
+            {
+                node = ParseTypeName(item);
+            }
+            if("IdentifierType" == NodeType)
+            {
+                node = ParseTypeDeclIdentifierType(item);
+            }
             return node;
         }
+        FlowGraphNode ParseTypeDeclIdentifierType(Dictionary<string, object> item)
+        {
+            TypeDeclIdentifierType node = new TypeDeclIdentifierType(Id++);
+            StringBuilder str = new StringBuilder();
 
+            ArrayList type1 = ((ArrayList)(item["names"]));
+            for (int i = 0; i < type1.Count; i++)
+            {
+                if (i == type1.Count - 1)
+                {
+                    str.Append(type1[i].ToString());
+                }
+                else
+                {
+                    str.Append(type1[i].ToString() + " ");
+                }
+            }
+            node.name = str.ToString();
+            return node;
+        }
         FlowGraphNode ParseDeclaration(Dictionary<string, object> item)
         {
             DeclNode node = new DeclNode(Id++);
             Dictionary<string, object> type = null;
-            if(item.ContainsKey("name"))
-            node.DeclName = item["name"].ToString();
+            if (item.ContainsKey("name"))
+            {
+                if(item["name"]!=null)
+                node.DeclName = item["name"].ToString();
+            }
             if (item.ContainsKey("init"))
             {
                 if (null == item["init"])
@@ -312,7 +347,31 @@ namespace WpfApplication2
         {
             UnaryOp node = new UnaryOp(Id++);
             node.OP = item["op"].ToString();
-            node.left = ParseNode(((Dictionary<string, object>)item["expr"]));
+            Dictionary<string, object> tmp = (Dictionary<string, object>)(item["expr"]);
+                if (tmp.ContainsKey("expr"))
+                {
+                node.left = ParseNode(((Dictionary<string, object>)tmp["expr"]));
+            }
+            else
+            {
+                node.left = ParseNode(((Dictionary<string, object>)item["expr"]));
+            }
+            return node;
+        }
+        FlowGraphNode ParseCast(Dictionary<string, object> item)
+        {
+            Cast node = new Cast(Id++);
+            node.OP = item["op"].ToString();
+            Dictionary<string, object> tmp = (Dictionary<string, object>)(item["expr"]);
+            if (tmp.ContainsKey("expr"))
+            {
+                node.expr = ParseNode(((Dictionary<string, object>)tmp["expr"]));
+            }
+            else
+            {
+                node.expr = ParseNode(((Dictionary<string, object>)item["expr"]));
+            }
+            node.typetocast = ParseNode(((Dictionary<string, object>)item["to_type"]));
             return node;
         }
         FlowGraphNode ParseTypeDef(Dictionary<string, object> item)
@@ -330,6 +389,12 @@ namespace WpfApplication2
                 node.name = item["name"].ToString();
             }
                 node.Type = ParseNode(((Dictionary<string, object>)item["type"]));
+            return node;
+        }
+        FlowGraphNode ParseTypeName(Dictionary<string, object> item)
+        {
+            TypeName node = new TypeName(Id++);
+            node.Type = ParseNode(((Dictionary<string, object>)item["type"]));
             return node;
         }
         FlowGraphNode ParseStruct(Dictionary<string, object> item)
@@ -483,9 +548,12 @@ namespace WpfApplication2
         }
 
         node.loop = stmt;
+            if(item["cond"]!=null)
         node.condition = ParseNode((Dictionary<string, object>)item["cond"]);
-            node.init = ParseNode((Dictionary<string, object>)item["init"]);
-            node.next = ParseNode((Dictionary<string, object>)item["next"]);
+            if (item["init"] != null)
+                node.init = ParseNode((Dictionary<string, object>)item["init"]);
+            if (item["next"] != null)
+                node.next = ParseNode((Dictionary<string, object>)item["next"]);
             return node;
     }
     }

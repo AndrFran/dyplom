@@ -27,6 +27,9 @@ namespace WpfApplication2
         E_ENUM,
         E_ENUMVALUE,
         E_STRUCTREF,
+        E_TYPENAME,
+        E_TYPEDECL_ID,
+        E_CAST,
     }
     public interface FlowGraphNode
     {
@@ -453,7 +456,38 @@ namespace WpfApplication2
 
     }
 
+    public class Cast : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public Cast(int id)
+        {
+            this.id = id;
+            type = NodeType.E_CAST;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
 
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string OP { get; set; }
+        public FlowGraphNode expr;
+        public FlowGraphNode typetocast;
+        override public string ToString()
+        {
+            return this.typetocast.ToString() + this.expr.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+
+    }
     public class ReturnNode : FlowGraphNode
     {
         int id;
@@ -491,7 +525,36 @@ namespace WpfApplication2
             return this.id;
         }
     }
+    public class TypeName:FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public TypeName(int id)
+        {
+            this.id = id;
+            type = NodeType.E_TYPENAME;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
 
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public FlowGraphNode Type;
+
+        override public string ToString()
+        {
+            return " " + this.Type.ToString();
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
     public class TypeDef : FlowGraphNode
     {
         int id;
@@ -549,7 +612,7 @@ namespace WpfApplication2
 
         override public string ToString()
         {
-            return "type " + this.name.ToString();
+            return "type " + this.Type.ToString();
         }
         public int getId()
         {
@@ -648,6 +711,37 @@ namespace WpfApplication2
         {
 
             return value;
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+    public class TypeDeclIdentifierType : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public TypeDeclIdentifierType(int id)
+        {
+            this.id = id;
+            type = NodeType.E_TYPEDECL_ID;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string name;
+
+        override public string ToString()
+        {
+            return "type " + this.name.ToString();
         }
         public int getId()
         {

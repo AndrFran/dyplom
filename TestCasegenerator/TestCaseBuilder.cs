@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace WpfApplication2
 {
-    public enum TestCaseType
+    public class CheckAssigment
     {
-        E_RETURN_CHECK_INT,
-        E_RETURN_CHECK_CHAR,
-        E_RETURN_CHECK_BOOL,
-        E_FUNC_CALL_CHECK,
-        E_POINTER_CHECK,
-        E_GLOBAL_CHECK
+
     }
     public class CheckReturn
     {
@@ -35,7 +30,7 @@ namespace WpfApplication2
     }
     public class TestCase
     {
-
+        public string result { get; set; }
         public string function_name { get; set; }
         public Variable function_type { get; set; }
         public int id { get; set; }
@@ -82,13 +77,16 @@ namespace WpfApplication2
             Variable v = new Variable();
             v.name = node.DeclName;
             v.type = node.DeclType;
-            if (node == f.Getparams().Last())
+            if (f.Getparams().Count > 0)
             {
-                v.comma = "";
-            }
-            else
-            {
-                v.comma = ",";
+                if (node == f.Getparams().Last())
+                {
+                    v.comma = "";
+                }
+                else
+                {
+                    v.comma = ",";
+                }
             }
             if (true == node.isPointer)
             {
@@ -168,10 +166,37 @@ namespace WpfApplication2
                             }
                         case NodeType.E_FUNC_CALL:
                             {
+
                                 break;
                             }
                         case NodeType.E_ASSIGMENT:
                             {
+                                OperationNode node = (OperationNode)testnode;
+                                foreach(FlowGraphNode g in GlobalScope)
+                                {
+
+                                    if(NodeType.E_DECL== g.getNodeType())
+                                    {
+                                        if(node.left.getNodeType()==NodeType.E_STRUCTREF)
+                                        {
+                                            StructRef Sref = (StructRef)node.left;
+
+                                        }
+                                        if(node.left.getNodeType()== NodeType.E_ID)
+                                        {
+
+                                        }
+                                        if (node.left.getNodeType() == NodeType.E_ARRAY_REF)
+                                        {
+
+                                        }
+                                        if (node.left.getNodeType() == NodeType.E_STRUCT)
+                                        {
+
+                                        }
+
+                                    }
+                                }
                                 break;
                             }
                         case NodeType.E_RETURN:
@@ -192,6 +217,12 @@ namespace WpfApplication2
                                 {
                                     NewCase.returnchecker.ToCheck.type = "int";
                                     NewCase.returnchecker.intcheck = true;
+
+                                }
+                                if (NewCase.function_type.type.Contains("char"))
+                                {
+                                    NewCase.returnchecker.ToCheck.type = "char";
+                                    NewCase.returnchecker.charcheck = true;
 
                                 }
                                 else

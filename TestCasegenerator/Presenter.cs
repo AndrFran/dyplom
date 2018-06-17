@@ -87,7 +87,61 @@ namespace WpfApplication2
             grid.ypos = y;
             return grid;
         }
-        List<System.Windows.UIElement> getNextLine(int x,int y)
+        enum Direction
+        {
+            E_RIGHT,
+            E_LEFT,
+            E_TOP,
+            E_DOWN
+        }
+        List<System.Windows.UIElement> getArrows(int x,int y, Direction dir)
+        {
+            List<System.Windows.UIElement> l = new List<System.Windows.UIElement>();
+            Line myLine1 = new Line();
+            Line myLine2 = new Line();
+
+            switch (dir)
+            {
+                case Direction.E_RIGHT:
+                    {
+                        myLine1.X1 = x;
+                        myLine1.X2 = x + 10;
+                        myLine1.Y1 = y;
+                        myLine1.Y2 = y - 10;
+                        myLine2.X1 = x;
+                        myLine2.X2 = x + 10;
+                        myLine2.Y1 = y;
+                        myLine2.Y2 = y + 10;
+                        break;
+                    }
+                case Direction.E_LEFT:
+                    {
+
+                        break;
+                    }
+                case Direction.E_TOP:
+                    {
+        
+                        break;
+                    }
+                case Direction.E_DOWN:
+                    {
+
+                        break;
+                    }
+            }
+            myLine1.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+          
+            myLine1.StrokeThickness = 2;
+            l.Add(myLine1);
+
+            myLine2.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+            
+            myLine2.StrokeThickness = 2;
+            l.Add(myLine2);
+            return l;
+        }
+       List<System.Windows.UIElement> getNextLine(int x,int y)
         {
             List<System.Windows.UIElement> l = new List<System.Windows.UIElement>();
             Line myLine = new Line();
@@ -178,6 +232,7 @@ namespace WpfApplication2
         }
         public List<System.Windows.UIElement> generateShapes(List<FlowGraphNode> nodes, int x,ref int y, List<FlowGraphNode> path)
         {
+            
             List<System.Windows.UIElement> shapes = new List<System.Windows.UIElement>();
             foreach (FlowGraphNode node in nodes)
             {
@@ -201,9 +256,21 @@ namespace WpfApplication2
                             shapes.Add(new Line() { X1 = x, X2 = x-150, Y1 = y+20, Y2 = y+20, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x-150, X2 = x - 150, Y1 = y+20, Y2 = whiley, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
-                            shapes.AddRange(getNextLine(x, y));
-                            y += 20;
 
+                            shapes.Add(new Line() { X1 = x, X2 = x + 150, Y1 = y-10, Y2 = y- 10, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x + 150, X2 = x + 150, Y1 = y  -10, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x + 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.AddRange(getArrows(x + (int)size.Width/2-20, whiley, Direction.E_RIGHT));
+                            if (NodeType.E_FOR == whilenode.loop.Last().getNodeType()||
+                                NodeType.E_WHILE == whilenode.loop.Last().getNodeType())
+                            {
+
+                            }
+                            else
+                            {
+                                shapes.AddRange(getNextLine(x, y));
+                                y += 20;
+                            }
                             break;
                         }
                     case NodeType.E_FOR:
@@ -223,9 +290,21 @@ namespace WpfApplication2
                             shapes.Add(new Line() { X1 = x, X2 = x - 150, Y1 = y + 20, Y2 = y + 20, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x - 150, Y1 = y + 20, Y2 = whiley, Stroke = Brushes.LightBlue });
                             shapes.Add(new Line() { X1 = x - 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
-                            shapes.AddRange(getNextLine(x, y));
-                            y += 20;
 
+                            shapes.Add(new Line() { X1 = x, X2 = x + 150, Y1 = y - 10, Y2 = y - 10, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x + 150, X2 = x + 150, Y1 = y - 10, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.Add(new Line() { X1 = x + 150, X2 = x, Y1 = whiley, Y2 = whiley, Stroke = Brushes.LightBlue });
+                            shapes.AddRange(getArrows(x + (int)size.Width / 2, whiley, Direction.E_RIGHT));
+                            if (NodeType.E_FOR == whilenode.loop.Last().getNodeType() ||
+                                    NodeType.E_WHILE == whilenode.loop.Last().getNodeType())
+                            {
+
+                            }
+                            else
+                            {
+                                shapes.AddRange(getNextLine(x, y));
+                                y += 20;
+                            }
                             break;
                         }
                     case NodeType.E_IF:
@@ -239,25 +318,25 @@ namespace WpfApplication2
                             int y2 = y;
                             if (ifnode.left.Count>0)
                             {
-                                x1 = x + 200;
-                                shapes.AddRange(getNextifLine(x, y, x + 200));
+                                x1 = x + 300;
+                                shapes.AddRange(getNextifLine(x, y, x + 300));
                             }
                             if(ifnode.right.Count>0)
                             {
-                                x2 = x - 200;
-                                shapes.AddRange(getNextifLine(x, y, x - 200));
+                                x2 = x - 300;
+                                shapes.AddRange(getNextifLine(x, y, x - 300));
                             }
                             y += 20;
                             int tmp = y;
                             if (ifnode.left.Count > 0)
                             {
-                                shapes.AddRange(generateShapes(ifnode.left, x + 200, ref y,path));
+                                shapes.AddRange(generateShapes(ifnode.left, x + 300, ref y,path));
                                 y1 = y;
                                 y += 20;
                             }
                             if (ifnode.right.Count > 0)
                             {
-                                shapes.AddRange(generateShapes(ifnode.right, x - 200, ref tmp,path));
+                                shapes.AddRange(generateShapes(ifnode.right, x - 300, ref tmp,path));
                                 y2 = tmp;
                                 tmp += 20;
                             }
