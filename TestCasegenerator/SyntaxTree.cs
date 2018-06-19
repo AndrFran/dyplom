@@ -175,7 +175,11 @@ namespace WpfApplication2
             {
                 node = ParseStruct(item);
             }
-            if("StructRef" == NodeType)
+            if ("Union" == NodeType)
+            {
+                node = ParseUnion(item);
+            }
+            if ("StructRef" == NodeType)
             {
                 node = ParseStructRef(item);
             }
@@ -249,6 +253,31 @@ namespace WpfApplication2
                 {
                     type = item;
                     var =item["_nodetype"].ToString();
+                }
+                if("Union" == var)
+                {
+                    if(node.isArray || node.isPointer)
+                    {
+                        UnionNode r = (UnionNode)ParseNode(type);
+                        node.DeclType = r.name;
+                    }
+                    else
+                    {
+                        return ParseNode(type);
+                    }
+
+                }
+                if("Struct"==var)
+                {
+                    if (node.isArray || node.isPointer)
+                    {
+                        StructNode r = (StructNode)ParseNode(type);
+                        node.DeclType = r.name;
+                    }
+                    else
+                    {
+                        return ParseNode(type);
+                    }
                 }
                     if ("ArrayDecl" == var)
                 {
@@ -402,9 +431,33 @@ namespace WpfApplication2
             StructNode node = new StructNode(Id++);
             node.Decl = new List<FlowGraphNode>();
             ArrayList decls = (ArrayList)item["decls"];
+            if(decls!=null)
             foreach (Dictionary<string, object> decl in decls)
             {
                 node.Decl.Add(ParseNode(decl));
+            }
+            if (item.ContainsKey("name"))
+            {
+                if(item["name"]!= null)
+                node.name = item["name"].ToString();
+            }
+            return node;
+        }
+        FlowGraphNode ParseUnion(Dictionary<string, object> item)
+        {
+            UnionNode node = new UnionNode(Id++);
+            node.Decl = new List<FlowGraphNode>();
+            ArrayList decls = (ArrayList)item["decls"];
+            if(decls!=null)
+            foreach (Dictionary<string, object> decl in decls)
+            {
+                node.Decl.Add(ParseNode(decl));
+            }
+            if (item.ContainsKey("name"))
+            {
+                if (item["name"] != null)
+                    node.name = item["name"].ToString();
+
             }
             return node;
         }

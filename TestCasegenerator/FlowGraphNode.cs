@@ -30,6 +30,7 @@ namespace WpfApplication2
         E_TYPENAME,
         E_TYPEDECL_ID,
         E_CAST,
+        E_UNION,
     }
     public interface FlowGraphNode
     {
@@ -641,10 +642,44 @@ namespace WpfApplication2
 
         
         public List<FlowGraphNode> Decl;
-
+        public string name;
         override public string ToString()
         {
             
+            return "struct ";
+        }
+        public int getId()
+        {
+            return this.id;
+        }
+    }
+
+
+    public class UnionNode : FlowGraphNode
+    {
+        int id;
+        NodeType type;
+        public UnionNode(int id)
+        {
+            this.id = id;
+            type = NodeType.E_UNION;
+        }
+        public NodeType getNodeType()
+        {
+            return this.type;
+        }
+
+        public void setNodeType(NodeType type)
+        {
+            this.type = type;
+        }
+
+        public string name;
+        public List<FlowGraphNode> Decl;
+
+        override public string ToString()
+        {
+
             return "struct ";
         }
         public int getId()

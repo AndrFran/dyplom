@@ -40,6 +40,8 @@ namespace WpfApplication2
         public IEnumerable<FlowGraphNode> path { get; set; }
         public List<FlowGraphNode> function_nodes { get; set; }
         public CheckReturn returnchecker { get; set; }
+
+        public IEnumerable<CheckReturn> AssigmentChecker { get; set; }
     }
 
     public class TestCases
@@ -77,15 +79,18 @@ namespace WpfApplication2
             Variable v = new Variable();
             v.name = node.DeclName;
             v.type = node.DeclType;
-            if (f.Getparams().Count > 0)
+            if (f != null)
             {
-                if (node == f.Getparams().Last())
+                if (f.Getparams().Count > 0)
                 {
-                    v.comma = "";
-                }
-                else
-                {
-                    v.comma = ",";
+                    if (node == f.Getparams().Last())
+                    {
+                        v.comma = "";
+                    }
+                    else
+                    {
+                        v.comma = ",";
+                    }
                 }
             }
             if (true == node.isPointer)
@@ -121,6 +126,74 @@ namespace WpfApplication2
             return v;
 
         }
+        private FlowGraphNode resolveTypedef(List<FlowGraphNode> Scope,string typename)
+        {
+            foreach(FlowGraphNode node in Scope)
+            {
+                if(node.getNodeType() == NodeType.E_TYPEDEF)
+                {
+                    TypeDef tmp = (TypeDef)node;
+                    if(tmp.name == typename)
+                    {
+                        return ((TypeDecl)tmp.TypeDecl).Type;
+                    }
+                }
+            }
+            return null;
+        }
+        private FlowGraphNode getStructByType(List<FlowGraphNode> Scope, string typename)
+        {
+            foreach (FlowGraphNode node in Scope)
+            {
+                if (node.getNodeType() == NodeType.E_STRUCT)
+                {
+                    StructNode tmp = (StructNode)node;
+                    //if (tmp. == typename)
+                   // {
+                     //   return tmp.TypeDecl;
+                    //}
+                }
+            }
+            return null;
+        }
+        private DeclNode resovleType(List<FlowGraphNode> Scope, string name)
+        {
+            foreach (FlowGraphNode g in Scope)
+            {
+
+                if (g.getNodeType() == NodeType.E_DECL)
+                {
+                    DeclNode tmp = (DeclNode)g;
+                    if(tmp.DeclName == name)
+                    {
+                        return tmp;
+                    }
+                }
+                if(g.getNodeType() == NodeType.E_STRUCT)
+                {
+                    StructNode tmp = (StructNode)g;
+                    foreach(FlowGraphNode node in tmp.Decl)
+                    {
+                        if(null!= resovleType(new List<FlowGraphNode>() { node},name))
+                        {
+                            return resovleType(new List<FlowGraphNode>() { node }, name);
+                        }
+                    }
+                }
+                if(g.getNodeType() == NodeType.E_UNION)
+                {
+                    UnionNode tmp = (UnionNode)g;
+                    foreach (FlowGraphNode node in tmp.Decl)
+                    {
+                        if (null != resovleType(new List<FlowGraphNode>() { node }, name))
+                        {
+                            return resovleType(new List<FlowGraphNode>() { node }, name);
+                        }
+                    }
+                }
+            }
+                    return null;
+        }
         public List<TestCase> BuildTestCases(Function f,List<FlowGraphNode> GlobalScope)
         {
             List<TestCase> testcases = new List<TestCase>();
@@ -141,6 +214,7 @@ namespace WpfApplication2
                 NewCase.function_type = DeclNodeToVar(f.returntype, f);
                 NewCase.function_nodes = f.nodes;
                 NewCase.path = path;
+                List<CheckReturn> AssigmentChecks = new List<CheckReturn>();
                 foreach (FlowGraphNode testnode in path)
                 {
                     List<DeclNode> insideVars = new List<DeclNode>();
@@ -172,31 +246,69 @@ namespace WpfApplication2
                         case NodeType.E_ASSIGMENT:
                             {
                                 OperationNode node = (OperationNode)testnode;
-                                foreach(FlowGraphNode g in GlobalScope)
+                                bool InGlobalScope = false;
+                                CheckReturn checker = new CheckReturn();
+                                Variable toCheck = new Variable();
+                                Variable CheckValue = new Variable();
+                                foreach (FlowGraphNode g in GlobalScope)
                                 {
-
-                                    if(NodeType.E_DECL== g.getNodeType())
+                                    if (g.getNodeType() == NodeType.E_DECL)
                                     {
-                                        if(node.left.getNodeType()==NodeType.E_STRUCTREF)
+                                        if (node.left.getNodeType() == NodeType.E_STRUCTREF)
                                         {
-                                            StructRef Sref = (StructRef)node.left;
+                                            StructRef tmp = (StructRef)node.left;
+                                            while (tmp.structname.getNodeType() != NodeType.E_ID)
+                                            {
+                                                tmp = (StructRef)tmp.structname;
+                                            }
+                                            ID name = (ID)tmp.structname;
+                                            if (name.Name == ((DeclNode)g).DeclName)
+                                            {
 
+                                               
+                                                DeclNode r = resovleType( new List<FlowGraphNode>(){ resolveTypedef(GlobalScope, ((DeclNode)g).DeclType) }, ((StructRef)(node.left)).structfield.ToString());
+                                                CheckValue = DeclNodeToVar(r, null);
+                                                CheckValue.name = r.DeclName + "Checker";
+                                                CheckValue.type = r.DeclType;
+                                                InGlobalScope = true;
+                                            }
                                         }
-                                        if(node.left.getNodeType()== NodeType.E_ID)
-                                        {
 
-                                        }
-                                        if (node.left.getNodeType() == NodeType.E_ARRAY_REF)
-                                        {
-
-                                        }
-                                        if (node.left.getNodeType() == NodeType.E_STRUCT)
-                                        {
-
-                                        }
 
                                     }
                                 }
+                                if (InGlobalScope)
+                                {
+
+
+                                    if (node.left.getNodeType() == NodeType.E_STRUCTREF)
+                                    {
+                                        StructRef Sref = (StructRef)node.left;
+                                        toCheck.name = Sref.structname.ToString() + Sref.reftype.ToString() + Sref.structfield;
+                                        if (node.right.getNodeType() == NodeType.E_COSNT)
+                                        {
+                                            ConstantNode tmp = (ConstantNode)node.right;
+                                            toCheck.value = tmp.Value;
+                                        }
+                                        checker.memcheck = true;
+                                        checker.ToCheck = toCheck;
+                                        AssigmentChecks.Add(checker);
+                                    }
+                                    if (node.left.getNodeType() == NodeType.E_ID)
+                                    {
+                                        checker.memcheck = true;
+                                    }
+                                    if (node.left.getNodeType() == NodeType.E_ARRAY_REF)
+                                    {
+
+                                    }
+                                    if (node.left.getNodeType() == NodeType.E_STRUCT)
+                                    {
+
+                                    }
+                                }
+                                    
+                                
                                 break;
                             }
                         case NodeType.E_RETURN:
@@ -243,6 +355,7 @@ namespace WpfApplication2
                     }
 
                 }
+                NewCase.AssigmentChecker = AssigmentChecks;
                 testcases.Add(NewCase);
 
             }
