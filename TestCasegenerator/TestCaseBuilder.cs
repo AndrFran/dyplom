@@ -157,6 +157,22 @@ namespace WpfApplication2
             }
             return null;
         }
+        private DeclNode resovleTypeID(List<FlowGraphNode> Scope, string name)
+        {
+            foreach (FlowGraphNode g in Scope)
+            {
+
+                if (g.getNodeType() == NodeType.E_DECL)
+                {
+                    DeclNode tmp = (DeclNode)g;
+                    if (tmp.DeclName == name)
+                    {
+                        return tmp;
+                    }
+                }
+            }
+            return null;
+        }
         private DeclNode resovleType(List<FlowGraphNode> Scope, string name)
         {
             foreach (FlowGraphNode g in Scope)
@@ -260,7 +276,27 @@ namespace WpfApplication2
                                             StructRef tmp = (StructRef)node.left;
                                             while (tmp.structname.getNodeType() != NodeType.E_ID)
                                             {
-                                                tmp = (StructRef)tmp.structname;
+                                                if (tmp.structname.getNodeType() == NodeType.E_UN_OP)
+                                                {
+                                                    UnaryOp pp = (UnaryOp)tmp.structname;
+                                                    while(pp.left.getNodeType() == NodeType.E_UN_OP)
+                                                    {
+                                                        pp = (UnaryOp)pp.left;
+                                                    }
+                                                    if(pp.left.getNodeType() == NodeType.E_STRUCTREF)
+                                                    {
+                                                        tmp = (StructRef)pp.left;
+                                                    }
+                                                    if(pp.left.getNodeType() == NodeType.E_ID)
+                                                    {
+                                                        tmp.structname = pp.left;
+                                                        break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    tmp = (StructRef)tmp.structname;
+                                                }
                                             }
                                             ID name = (ID)tmp.structname;
                                             if (name.Name == ((DeclNode)g).DeclName)
@@ -272,6 +308,23 @@ namespace WpfApplication2
                                                 CheckValue.type = r.DeclType;
                                                 InGlobalScope = true;
                                             }
+                                        }
+                                        if (node.left.getNodeType() == NodeType.E_ID)
+                                        {
+                                            ID tmp = (ID)node.left;
+                                            if (tmp.Name == ((DeclNode)g).DeclName)
+                                            {
+
+                                                DeclNode r = resovleTypeID(GlobalScope, tmp.Name);
+                                                CheckValue = DeclNodeToVar(r, null);
+                                                CheckValue.name = r.DeclName + "Checker";
+                                                CheckValue.type = r.DeclType;
+                                                InGlobalScope = true;
+                                            }
+                                        }
+                                        if (node.left.getNodeType() == NodeType.E_ARRAY_REF)
+                                        {
+
                                         }
 
 
@@ -295,13 +348,19 @@ namespace WpfApplication2
                                     }
                                     if (node.left.getNodeType() == NodeType.E_ID)
                                     {
+                                        ID Identifier = (ID)node.left;
+                                        toCheck.name = Identifier.Name;
+                                        if (node.right.getNodeType() == NodeType.E_COSNT)
+                                        {
+                                            ConstantNode tmp = (ConstantNode)node.right;
+                                            toCheck.value = tmp.Value;
+                                        }
+                                        checker.Cheker = CheckValue;
+                                        checker.ToCheck = toCheck;
+                                        AssigmentChecks.Add(checker);
                                         checker.memcheck = true;
                                     }
                                     if (node.left.getNodeType() == NodeType.E_ARRAY_REF)
-                                    {
-
-                                    }
-                                    if (node.left.getNodeType() == NodeType.E_STRUCT)
                                     {
 
                                     }

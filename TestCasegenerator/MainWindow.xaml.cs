@@ -80,6 +80,7 @@ namespace WpfApplication2
             int y = 0;
             List<UIElement> nodes = presenter.BuildFlowControlGraph(ref y, caseToDraw.function_nodes, caseToDraw.path.ToList());
             DrawingField.Height = y;
+            DrawingField.Width = 5000;
             foreach (var elem in nodes)
             {
                 DrawingField.Children.Add(elem);

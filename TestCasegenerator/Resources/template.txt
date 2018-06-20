@@ -53,21 +53,28 @@ static void test_case_{{function_name}}_{{id}}()
 	//call function
 
 	{{#returnchecker}}
-	{{function_type}} ret = {{function_name}}({{#Arguments}}{{name}}{{comma}}{{/Arguments}});
+	{{#function_type}} {{type}} {{ispointer}}{{isarray}} {{/function_type}} ret = {{function_name}}({{#Arguments}}{{name}}{{comma}}{{/Arguments}});
 	{{/returnchecker}}
 	{{^returnchecker}}
 	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
 	{{/returnchecker}}
+
 	{{#AssigmentChecker}}
 	{{#Cheker}}
 	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
 	{{/Cheker}}
 	assert_memory_equal({{#ToCheck}}{{name}}{{/ToCheck}},{{#Cheker}}{{name}}{{/Cheker}},sizeof({{#ToCheck}}{{name}}{{/ToCheck}}));
+	
 	{{/AssigmentChecker}}
+
 	{{#returnchecker}}
 	{{#intcheck}}
 	assert_int_equal(ret,{{#ToCheck}}{{Value}}{{/ToCheck}});
 	{{/intcheck}}
+{{#memcheck}}
+	{{#function_type}} {{type}} {{ispointer}}{{isarray}} {{/function_type}} chekPointer = {0}; 
+	assert_ptr_equal(ret,chekPointer);
+{{/memcheck}}
 	{{/returnchecker}}
 }
 {{/testcases}}
