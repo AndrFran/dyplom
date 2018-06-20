@@ -12,6 +12,7 @@ namespace WpfApplication2
     }
     public class CheckReturn
     {
+        public Variable Cheker { get; set; }
         public Variable ToCheck { get; set; }
         public bool intcheck { get; set; }
         public bool pointercheck { get; set; }
@@ -265,7 +266,6 @@ namespace WpfApplication2
                                             if (name.Name == ((DeclNode)g).DeclName)
                                             {
 
-                                               
                                                 DeclNode r = resovleType( new List<FlowGraphNode>(){ resolveTypedef(GlobalScope, ((DeclNode)g).DeclType) }, ((StructRef)(node.left)).structfield.ToString());
                                                 CheckValue = DeclNodeToVar(r, null);
                                                 CheckValue.name = r.DeclName + "Checker";
@@ -279,8 +279,6 @@ namespace WpfApplication2
                                 }
                                 if (InGlobalScope)
                                 {
-
-
                                     if (node.left.getNodeType() == NodeType.E_STRUCTREF)
                                     {
                                         StructRef Sref = (StructRef)node.left;
@@ -291,6 +289,7 @@ namespace WpfApplication2
                                             toCheck.value = tmp.Value;
                                         }
                                         checker.memcheck = true;
+                                        checker.Cheker = CheckValue;
                                         checker.ToCheck = toCheck;
                                         AssigmentChecks.Add(checker);
                                     }

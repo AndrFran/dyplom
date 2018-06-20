@@ -191,6 +191,10 @@ namespace WpfApplication2
             {
                 node = ParseTypeDeclIdentifierType(item);
             }
+            if("Cast" == NodeType)
+            {
+                node = ParseCast(item);
+            }
             return node;
         }
         FlowGraphNode ParseTypeDeclIdentifierType(Dictionary<string, object> item)
@@ -390,7 +394,6 @@ namespace WpfApplication2
         FlowGraphNode ParseCast(Dictionary<string, object> item)
         {
             Cast node = new Cast(Id++);
-            node.OP = item["op"].ToString();
             Dictionary<string, object> tmp = (Dictionary<string, object>)(item["expr"]);
             if (tmp.ContainsKey("expr"))
             {

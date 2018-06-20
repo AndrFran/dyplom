@@ -270,7 +270,20 @@ namespace WpfApplication2
 
         override public string ToString()
         {
-            return "For(" +this.init.ToString()+";\n"+ this.condition.ToString()+";\n"+this.next.ToString()+")";
+            StringBuilder rez = new StringBuilder();
+            if(this.init != null)
+            {
+                rez.Append(this.init.ToString() + ";\n");
+            }
+            if (this.condition != null)
+            {
+                rez.Append(this.condition.ToString() + ";\n");
+            }
+            if (this.next != null)
+            {
+                rez.Append(this.next.ToString() + ")");
+            }
+            return "For(" +rez.ToString();
         }
     }
 
@@ -549,7 +562,7 @@ namespace WpfApplication2
 
         override public string ToString()
         {
-            return " " + this.Type.ToString();
+            return " ";
         }
         public int getId()
         {

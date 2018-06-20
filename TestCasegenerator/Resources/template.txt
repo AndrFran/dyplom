@@ -58,11 +58,13 @@ static void test_case_{{function_name}}_{{id}}()
 	{{^returnchecker}}
 	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
 	{{/returnchecker}}
-
+	{{#AssigmentChecker}}
+	{{#Cheker}}
+	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
+	{{/Cheker}}
+	assert_memory_equal({{#ToCheck}}{{name}}{{/ToCheck}},{{#Cheker}}{{name}}{{/Cheker}},sizeof({{#ToCheck}}{{name}}{{/ToCheck}}));
+	{{/AssigmentChecker}}
 	{{#returnchecker}}
-	{{#memcheck}}
-
-	{{/memcheck}}
 	{{#intcheck}}
 	assert_int_equal(ret,{{#ToCheck}}{{Value}}{{/ToCheck}});
 	{{/intcheck}}
