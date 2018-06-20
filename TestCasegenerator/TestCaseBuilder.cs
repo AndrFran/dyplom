@@ -29,6 +29,11 @@ namespace WpfApplication2
         public string ispointer { get; set; }
         public string comma { get; set; }
     }
+    public class FuncCallChecker
+    {
+        public string Name { get; set; }
+        public List<Variable> args;
+    }
     public class TestCase
     {
         public string result { get; set; }
@@ -37,11 +42,10 @@ namespace WpfApplication2
         public int id { get; set; }
         public IEnumerable<Variable> CheckVars { get; set; }
         public IEnumerable<Variable> Arguments { get; set; }
-        public IEnumerable<FuncCallNode> FuncCalls { get; set; }
+        public IEnumerable<FuncCallChecker> FuncCalls { get; set; }
         public IEnumerable<FlowGraphNode> path { get; set; }
         public List<FlowGraphNode> function_nodes { get; set; }
         public CheckReturn returnchecker { get; set; }
-
         public IEnumerable<CheckReturn> AssigmentChecker { get; set; }
     }
 
@@ -80,6 +84,7 @@ namespace WpfApplication2
             Variable v = new Variable();
             v.name = node.DeclName;
             v.type = node.DeclType;
+            v.comma = "";
             if (f != null)
             {
                 if (f.Getparams().Count > 0)
@@ -211,7 +216,7 @@ namespace WpfApplication2
             }
                     return null;
         }
-        public List<TestCase> BuildTestCases(Function f,List<FlowGraphNode> GlobalScope)
+        public List<TestCase> BuildTestCases(Function f,List<FlowGraphNode> GlobalScope,List<Function> functions)
         {
             List<TestCase> testcases = new List<TestCase>();
             FlowGraphWalker graphwalker = new FlowGraphWalker();
@@ -232,6 +237,7 @@ namespace WpfApplication2
                 NewCase.function_nodes = f.nodes;
                 NewCase.path = path;
                 List<CheckReturn> AssigmentChecks = new List<CheckReturn>();
+                List<FuncCallChecker> FuncCalls = new List<FuncCallChecker>(); 
                 foreach (FlowGraphNode testnode in path)
                 {
                     List<DeclNode> insideVars = new List<DeclNode>();
@@ -257,7 +263,21 @@ namespace WpfApplication2
                             }
                         case NodeType.E_FUNC_CALL:
                             {
-
+                                FuncCallNode node = (FuncCallNode)testnode;
+                                Boolean IsLocal = false;
+                                foreach(Function f1 in functions)
+                                {
+                                    if(f1.name == node.FunctionName)
+                                    {
+                                        IsLocal = true;
+                                    }
+                                }
+                                if(!IsLocal)
+                                {
+                                    FuncCallChecker checker = new FuncCallChecker();
+                                    checker.Name = node.FunctionName;
+                                    FuncCalls.Add(checker);
+                                }
                                 break;
                             }
                         case NodeType.E_ASSIGMENT:
@@ -364,6 +384,10 @@ namespace WpfApplication2
                                     {
 
                                     }
+                                    if(node.right.getNodeType() == NodeType.E_COSNT)
+                                    {
+                                        checker.Cheker.value = node.right.ToString();
+                                    }
                                 }
                                     
                                 
@@ -376,7 +400,11 @@ namespace WpfApplication2
                                 {
                                     break;
                                 }
-                                NewCase.returnchecker = new CheckReturn() { ToCheck= new Variable { type = NewCase.function_type.type,value=ret.expr.ToString()} };
+                                NewCase.returnchecker = new CheckReturn() { ToCheck= new Variable { type = NewCase.function_type.type,value="{0}"} };
+                                //if(ret.expr.getNodeType() == NodeType.E_COSNT)
+                                {
+                                    NewCase.returnchecker.ToCheck.value = ret.expr.ToString();
+                                }
                                 if (NewCase.function_type.ispointer != "" ||
                                      NewCase.function_type.isarray != "")
                                 {
@@ -413,6 +441,7 @@ namespace WpfApplication2
                     }
 
                 }
+                NewCase.FuncCalls = FuncCalls;
                 NewCase.AssigmentChecker = AssigmentChecks;
                 testcases.Add(NewCase);
 

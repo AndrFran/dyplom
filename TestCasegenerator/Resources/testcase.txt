@@ -1,9 +1,10 @@
 static void test_case_{{function_name}}_{{id}}()
 {
-	//declare intput arguments
+	//declare input arguments
 	{{#Arguments}}
 	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};
 	{{/Arguments}}
+
 	TestID = {{id}};
 	//call function
 

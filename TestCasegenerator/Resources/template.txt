@@ -58,7 +58,7 @@ static void test_case_{{function_name}}_{{id}}()
 	{{^returnchecker}}
 	{{function_name}}({{#Arguments}}{{name}},{{/Arguments}});
 	{{/returnchecker}}
-
+	{{#FuncCalls}}expect_function_call({{Name}});{{/FuncCalls}}
 	{{#AssigmentChecker}}
 	{{#Cheker}}
 	{{type}} {{ispointer}} {{name}} {{isarray}} = {{value}};

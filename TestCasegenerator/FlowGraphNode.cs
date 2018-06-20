@@ -164,9 +164,16 @@ namespace WpfApplication2
             StringBuilder str= new StringBuilder();
             foreach(var arg in this.args)
                 {
-                str.Append("\n"+arg.ToString() + "  ");
+                if (args.Last() == arg)
+                {
+                    str.Append(arg.ToString());
+                }
+                else
+                {
+                    str.Append(arg.ToString() + " , ");
+                }
             }
-            return "call  " + this.FunctionName + " with " + str.ToString();
+            return " " + this.FunctionName + "(" + str.ToString()+")";
         }
         public int getId()
         {

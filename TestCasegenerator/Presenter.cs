@@ -214,7 +214,7 @@ namespace WpfApplication2
             TestCaseBuilder builder = new TestCaseBuilder();
             foreach(Function f in funcs)
             {
-                ls.AddRange(builder.BuildTestCases(f ,tree.GlobalScope));
+                ls.AddRange(builder.BuildTestCases(f ,tree.GlobalScope,tree.ParsedFunctions));
             }
             cases.testcases = ls.AsEnumerable();
             return cases;

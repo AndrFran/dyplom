@@ -14,7 +14,7 @@ namespace WpfApplication2
         static int Id;
         List<Dictionary<string, object>> globals;
         List<Dictionary<string,object>> functions;
-        List<Function> ParsedFunctions;
+        public List<Function> ParsedFunctions;
         public List<FlowGraphNode> GlobalScope { get; set; }
         List<FlowGraphNode> graph = null;
         public SyntaxTree()
@@ -323,13 +323,20 @@ namespace WpfApplication2
         {
             FuncCallNode node = new FuncCallNode(Id++);
             node.FunctionName = ((Dictionary<string, object>)(item["name"]))["name"].ToString();
-            ArrayList arguments = (ArrayList)((Dictionary<string, object>)item["args"])["exprs"];
-            List<FlowGraphNode> args = new List<FlowGraphNode>();
-            foreach ( Dictionary < string, object> argument in arguments)
+            if (item["args"] != null)
             {
-                args.Add(ParseNode(argument));
+                ArrayList arguments = (ArrayList)((Dictionary<string, object>)item["args"])["exprs"];
+                List<FlowGraphNode> args = new List<FlowGraphNode>();
+                foreach (Dictionary<string, object> argument in arguments)
+                {
+                    args.Add(ParseNode(argument));
+                }
+                node.args = args;
             }
-            node.args = args;
+            else
+            {
+                node.args = new List<FlowGraphNode>();
+            }
             return node;
 
         }
